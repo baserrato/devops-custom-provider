@@ -29,13 +29,13 @@ type EngineerDataSourceModel struct {
 	Engineers []engineersModel `tfsdk:"engineers"`
 }
 type engineersModel struct {
-	Id    types.Int64  `tfsdk:"Id"`
-	Name  types.String `tfsdk:"Name"`
-	Email types.String `tfsdk:"Email"`
+	Id    types.Int64  `tfsdk:"id"`
+	Name  types.String `tfsdk:"name"`
+	Email types.String `tfsdk:"email"`
 }
 
 func (d *EngineerDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
-	resp.TypeName = req.ProviderTypeName + "_engineer"
+	resp.TypeName = req.ProviderTypeName + "_engineer_data"
 }
 
 func (d *EngineerDataSource) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diagnostics) {
@@ -44,15 +44,15 @@ func (d *EngineerDataSource) GetSchema(ctx context.Context) (tfsdk.Schema, diag.
 			"engineers": {
 				Computed: true,
 				Attributes: tfsdk.ListNestedAttributes(map[string]tfsdk.Attribute{
-					"Id": {
+					"id": {
 						Type:     types.Int64Type,
 						Computed: true,
 					},
-					"Name": {
+					"name": {
 						Type:     types.StringType,
 						Computed: true,
 					},
-					"Email": {
+					"email": {
 						Type:     types.StringType,
 						Computed: true,
 					},
