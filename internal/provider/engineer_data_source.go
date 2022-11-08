@@ -97,13 +97,13 @@ func (d *EngineerDataSource) Read(ctx context.Context, req datasource.ReadReques
 
 		    // Map response body to model
 		    for _, engineer := range engineers {
-		        coffeeState := engineersModel{
+		        engineerState := engineersModel{
 		            Id:          types.Int64Value(int64(engineer.Id)),
 		            Name:        types.StringValue(engineer.Name),
 		            Email:      types.StringValue(engineer.Email),
 		        }
 
-		        state.Engineers = append(state.Engineers, coffeeState)
+		        state.Engineers = append(state.Engineers, engineerState)
 		    }
 
 		    // Set state
