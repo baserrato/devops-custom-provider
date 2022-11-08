@@ -44,6 +44,7 @@ func (r *EngineerResource) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Di
 
 		Attributes: map[string]tfsdk.Attribute{
 			"name": {
+				Required:            true,
 				MarkdownDescription: "name for an Engineer",
 				Type:                types.StringType,
 			},
@@ -56,6 +57,7 @@ func (r *EngineerResource) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Di
 				Type: types.StringType,
 			},
 			"email": {
+				Required:            true,
 				MarkdownDescription: "email for an Engineer",
 				Type:                types.StringType,
 			},
