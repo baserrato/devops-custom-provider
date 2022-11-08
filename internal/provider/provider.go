@@ -65,7 +65,7 @@ func (p *ScaffoldingProvider) Configure(ctx context.Context, req provider.Config
 	resp.ResourceData = client
 }
 
-//refactoring this part since we are setting an engineer resource not example resource
+// refactoring this part since we are setting an engineer resource not example resource
 func (p *ScaffoldingProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
 		NewEngineerResource,
@@ -74,7 +74,7 @@ func (p *ScaffoldingProvider) Resources(ctx context.Context) []func() resource.R
 
 func (p *ScaffoldingProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
-		NewExampleDataSource,
+		NewEngineerDataSource,
 	}
 }
 
