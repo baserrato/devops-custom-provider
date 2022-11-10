@@ -26,6 +26,7 @@ type EngineerDataSource struct {
 type EngineerDataSourceModel struct {
 	Engineers []engineersModel `tfsdk:"engineers"`
 }
+
 type engineersModel struct {
 	Name  types.String `tfsdk:"name"`
 	Id    types.String `tfsdk:"id"`
@@ -40,7 +41,7 @@ func (d *EngineerDataSource) GetSchema(ctx context.Context) (tfsdk.Schema, diag.
 	return tfsdk.Schema{
 		Attributes: map[string]tfsdk.Attribute{
 			"engineers": {
-				Computed: true,
+				Required: true,
 				Attributes: tfsdk.ListNestedAttributes(map[string]tfsdk.Attribute{
 					"name": {
 						Type:     types.StringType,
@@ -48,11 +49,11 @@ func (d *EngineerDataSource) GetSchema(ctx context.Context) (tfsdk.Schema, diag.
 					},
 					"id": {
 						Type:     types.StringType,
-						Computed: true,
+						Required: true,
 					},
 					"email": {
 						Type:     types.StringType,
-						Computed: true,
+						Required: true,
 					},
 				}),
 			},
