@@ -30,9 +30,7 @@ func NewClient(host *string) (*Client, error) {
 	return &c, nil
 }
 
-
 func (c *Client) doRequest(req *http.Request) ([]byte, error) {
-
 
 	res, err := c.HTTPClient.Do(req)
 	if err != nil {
