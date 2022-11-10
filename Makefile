@@ -2,8 +2,11 @@
 
 default: plan
 
-plan: main.tf fmt generate
+plan: main.tf fmt build
 	terraform plan
+
+build: main.go generate
+	go build -o terraform-provider-devops-bootcamp
 
 generate: main.go
 	go generate
