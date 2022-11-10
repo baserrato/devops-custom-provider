@@ -25,10 +25,10 @@ description: |-
 Required:
 
 - `email` (String)
-- `name` (String)
+- `id` (String)
 
 Read-Only:
 
-- `id` (Number)
+- `name` (String)
 
 

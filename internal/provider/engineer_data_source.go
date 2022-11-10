@@ -2,8 +2,6 @@ package provider
 
 import (
 	"context"
-	"fmt"
-	"net/http"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
@@ -21,7 +19,7 @@ func NewEngineerDataSource() datasource.DataSource {
 
 // EngineerDataSource defines the data source implementation.
 type EngineerDataSource struct {
-	client *http.Client
+	client *Client
 }
 
 // EngineerDataSourceModel describes the data source data model.
@@ -30,8 +28,8 @@ type EngineerDataSourceModel struct {
 }
 
 type engineersModel struct {
-	Id    types.Int64  `tfsdk:"id"`
 	Name  types.String `tfsdk:"name"`
+	Id    types.String `tfsdk:"id"`
 	Email types.String `tfsdk:"email"`
 }
 
@@ -45,11 +43,11 @@ func (d *EngineerDataSource) GetSchema(ctx context.Context) (tfsdk.Schema, diag.
 			"engineers": {
 				Required: true,
 				Attributes: tfsdk.ListNestedAttributes(map[string]tfsdk.Attribute{
-					"id": {
-						Type:     types.Int64Type,
+					"name": {
+						Type:     types.StringType,
 						Computed: true,
 					},
-					"name": {
+					"id": {
 						Type:     types.StringType,
 						Required: true,
 					},
@@ -69,49 +67,45 @@ func (d *EngineerDataSource) Configure(ctx context.Context, req datasource.Confi
 		return
 	}
 
-	client, ok := req.ProviderData.(*http.Client)
-
-	if !ok {
-		resp.Diagnostics.AddError(
-			"Unexpected Data Source Configure Type",
-			fmt.Sprintf("Expected *http.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
-		)
-
-		return
-	}
+	client := req.ProviderData.(*Client)
 
 	d.client = client
 }
 
 func (d *EngineerDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
+	var state EngineerDataSourceModel
+
+	engineers, err := d.client.GetEngineers()
 	/*
-			var state EngineerDataSourceModel
-
-		    engineers, err := d.client.GetCoffees()
-		    if err != nil {
-		        resp.Diagnostics.AddError(
-		            "Unable to Read HashiCups Coffees",
-		            err.Error(),
-		        )
-		        return
-		    }
-
-		    // Map response body to model
-		    for _, engineer := range engineers {
-		        engineerState := engineersModel{
-		            Id:          types.Int64Value(int64(engineer.Id)),
-		            Name:        types.StringValue(engineer.Name),
-		            Email:      types.StringValue(engineer.Email),
-		        }
-
-		        state.Engineers = append(state.Engineers, engineerState)
-		    }
-
-		    // Set state
-		    diags := resp.State.Set(ctx, &state)
-		    resp.Diagnostics.Append(diags...)
-		    if resp.Diagnostics.HasError() {
-		        return
-		    }
+		resp.Diagnostics.AddError(
+			"Unexpected Data Source Configure Type",
+			fmt.Sprintf("Returned value from GetEngineers: %s.", engineers),
+		)
 	*/
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Unable to Read Engineers",
+			err.Error(),
+		)
+		return
+	}
+
+	// Map response body to model
+	for _, engineer := range engineers {
+		engineerState := engineersModel{
+			Name:  types.StringValue(engineer.Name),
+			Id:    types.StringValue(engineer.Id),
+			Email: types.StringValue(engineer.Email),
+		}
+
+		state.Engineers = append(state.Engineers, engineerState)
+	}
+
+	// Set state
+	diags := resp.State.Set(ctx, &state)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 }
