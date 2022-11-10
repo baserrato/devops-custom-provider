@@ -26,10 +26,12 @@ func (c *Client) GetEngineers() ([]Engineer_Api, error) {
 		}
 	*/
 	engineers := []Engineer_Api{}
+	//var results map[string]interface{}
 	err = json.Unmarshal(body, &engineers)
 	if err != nil {
 		return nil, err
 	}
+
 	return engineers, nil
 }
 
