@@ -8,9 +8,9 @@ import (
 	"strings"
 )
 
-func (c *Client) GetEngineers() ([]Engineer_Api, error) {
+func (c *Client) GetDevs() ([]Dev, error) {
 	//req, err := http.NewRequest("GET", fmt.Sprintf("%s/engineers", c.HostURL), nil)
-	res, err := http.Get("http://localhost:8080/engineers")
+	res, err := http.Get("http://localhost:8080/dev")
 	if err != nil {
 		return nil, err
 	}
@@ -25,24 +25,23 @@ func (c *Client) GetEngineers() ([]Engineer_Api, error) {
 			return "", err
 		}
 	*/
-	engineers := []Engineer_Api{}
+	devs := []Dev{}
 	//var results map[string]interface{}
-	err = json.Unmarshal(body, &engineers)
+	err = json.Unmarshal(body, &devs)
 	if err != nil {
 		return nil, err
 	}
 
-	return engineers, nil
+	return devs, nil
 }
 
-
-func (c *Client) CreateEngineer(engineer Engineer_Api) (*Engineer_Api, error) {
-	rb, err := json.Marshal(engineer)
+func (c *Client) CreateDev(dev Dev) (*Dev, error) {
+	rb, err := json.Marshal(dev)
 	if err != nil {
 		return nil, err
 	}
 
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s/engineers", c.HostURL), strings.NewReader(string(rb)))
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s/dev", c.HostURL), strings.NewReader(string(rb)))
 	if err != nil {
 		return nil, err
 	}
@@ -52,11 +51,11 @@ func (c *Client) CreateEngineer(engineer Engineer_Api) (*Engineer_Api, error) {
 		return nil, err
 	}
 
-	newEngineer := Engineer_Api{}
-	err = json.Unmarshal(body, &newEngineer)
+	newDev := Dev{}
+	err = json.Unmarshal(body, &newDev)
 	if err != nil {
 		return nil, err
 	}
 
-	return &newEngineer, nil
+	return &newDev, nil
 }
