@@ -14,3 +14,9 @@ resource "devops-bootcamp_engineer" "bob" {
   name  = "bob"
   email = "bob@bob.com"
 }
+
+
+data "devops-bootcamp_engineer_data" "bob2" {
+  engineers = [{ name = "bob", email = "bob@bob.com" }, ]
+}
+
