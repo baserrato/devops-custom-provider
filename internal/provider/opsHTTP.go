@@ -10,7 +10,7 @@ import (
 
 func (c *Client) GetOps() ([]Ops, error) {
 	//req, err := http.NewRequest("GET", fmt.Sprintf("%s/engineers", c.HostURL), nil)
-	res, err := http.Get("http://localhost:8080/ops")
+	res, err := http.Get("http://localhost:8080/op")
 	if err != nil {
 		return nil, err
 	}
