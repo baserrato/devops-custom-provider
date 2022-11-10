@@ -41,7 +41,7 @@ func (d *EngineerDataSource) GetSchema(ctx context.Context) (tfsdk.Schema, diag.
 	return tfsdk.Schema{
 		Attributes: map[string]tfsdk.Attribute{
 			"engineers": {
-				Required: true,
+				Computed: true,
 				Attributes: tfsdk.ListNestedAttributes(map[string]tfsdk.Attribute{
 					"name": {
 						Type:     types.StringType,
