@@ -2,8 +2,6 @@ package provider
 
 import (
 	"context"
-	"fmt"
-	"net/http"
 
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
@@ -23,7 +21,7 @@ func NewEngineerResource() resource.Resource {
 
 // ExampleResource defines the resource implementation.
 type EngineerResource struct {
-	client *http.Client
+	client *Client
 }
 
 // ExampleResourceModel describes the resource data model.
@@ -71,16 +69,7 @@ func (r *EngineerResource) Configure(ctx context.Context, req resource.Configure
 		return
 	}
 
-	client, ok := req.ProviderData.(*http.Client)
-
-	if !ok {
-		resp.Diagnostics.AddError(
-			"Unexpected Resource Configure Type",
-			fmt.Sprintf("Expected *http.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
-		)
-
-		return
-	}
+	client := req.ProviderData.(*Client)
 
 	r.client = client
 }

@@ -2,7 +2,6 @@ package provider
 
 import (
 	"context"
-	"net/http"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
@@ -58,9 +57,16 @@ func (p *ScaffoldingProvider) Configure(ctx context.Context, req provider.Config
 
 	// Configuration values are now available.
 	// if data.Endpoint.IsNull() { /* ... */ }
-
+	host := data.Endpoint.ValueString()
 	// Example client configuration for data sources and resources
-	client := http.DefaultClient
+	client, err := NewClient(&host)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Unable to API Client",
+			"An unexpected error occurred when creating the API client. "+err.Error(),
+		)
+		return
+	}
 	resp.DataSourceData = client
 	resp.ResourceData = client
 }
