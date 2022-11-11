@@ -1,19 +1,19 @@
 package provider
 
-type Dev struct {
-	Engineers []Engineer_Api `json:"engineer_map"`
+type Dev_Api struct {
 	Id        string         `json:"id"`
 	Name      string         `json:"name"`
+	Engineers []Engineer_Api `json:"engineers"`
 }
 
 type Ops_Api struct {
-	Engineers []Engineer_Api `json:"engineer_map"`
 	Id        string         `json:"id"`
 	Name      string         `json:"name"`
+	Engineers []Engineer_Api `json:"engineers"`
 }
 
 type Engineer_map struct {
-	Engineers map[string]Engineer_Api `json:"engineer_map"`
+	Engineers map[string]Engineer_Api `json:"engineers"`
 }
 type Engineer_Api struct {
 	Name  string `json:"name"`

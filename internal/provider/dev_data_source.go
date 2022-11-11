@@ -27,9 +27,9 @@ type DevDataSourceModel struct {
 	Devs []devModel `tfsdk:"devs"`
 }
 type devModel struct {
-	Name      types.String `tfsdk:"name"`
-	Id        types.String `tfsdk:"id"`
-	Engineers types.Map    `tfsdk:"engineer_map"`
+	Name      types.String     `tfsdk:"name"`
+	Id        types.String     `tfsdk:"id"`
+	Engineers []engineersModel `tfsdk:"engineers"`
 }
 
 func (d *DevDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
@@ -50,11 +50,22 @@ func (d *DevDataSource) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diagn
 						Type:     types.StringType,
 						Computed: true,
 					},
-					"engineer_map": {
-						Type: types.MapType{
-							ElemType: types.StringType,
-						},
-						Computed: true,
+					"engineers": {
+						Required: true,
+						Attributes: tfsdk.ListNestedAttributes(map[string]tfsdk.Attribute{
+							"name": {
+								Type:     types.StringType,
+								Required: true,
+							},
+							"id": {
+								Type:     types.StringType,
+								Required: true,
+							},
+							"email": {
+								Type:     types.StringType,
+								Required: true,
+							},
+						}),
 					},
 				}),
 			},
@@ -97,14 +108,19 @@ func (d *DevDataSource) Read(ctx context.Context, req datasource.ReadRequest, re
 	// Map response body to model
 
 	for _, dev := range devs {
-		maps, _ := types.MapValueFrom(ctx, types.StringType, dev.Engineers)
-		devState := devModel{
-			Name:      types.StringValue(dev.Name),
-			Id:        types.StringValue(dev.Id),
-			Engineers: maps,
+		devsState := devModel{
+			Name: types.StringValue(dev.Name),
+			Id:   types.StringValue(dev.Id),
+		}
+		for _, eng := range dev.Engineers {
+			devsState.Engineers = append(devsState.Engineers, engineersModel{
+				Name:  types.StringValue(string(eng.Name)),
+				Id:    types.StringValue(string(eng.Id)),
+				Email: types.StringValue(string(eng.Email)),
+			})
 		}
 
-		state.Devs = append(state.Devs, devState)
+		state.Devs = append(state.Devs, devsState)
 	}
 
 	// Set state

@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func (c *Client) GetDevs() ([]Dev, error) {
+func (c *Client) GetDevs() ([]Dev_Api, error) {
 	//req, err := http.NewRequest("GET", fmt.Sprintf("%s/engineers", c.HostURL), nil)
 	res, err := http.Get("http://localhost:8080/dev")
 	if err != nil {
@@ -25,7 +25,7 @@ func (c *Client) GetDevs() ([]Dev, error) {
 			return "", err
 		}
 	*/
-	devs := []Dev{}
+	devs := []Dev_Api{}
 	//var results map[string]interface{}
 	err = json.Unmarshal(body, &devs)
 	if err != nil {
@@ -35,7 +35,7 @@ func (c *Client) GetDevs() ([]Dev, error) {
 	return devs, nil
 }
 
-func (c *Client) CreateDev(dev Dev) (*Dev, error) {
+func (c *Client) CreateDev(dev Dev_Api) (*Dev_Api, error) {
 	rb, err := json.Marshal(dev)
 	if err != nil {
 		return nil, err
@@ -51,7 +51,7 @@ func (c *Client) CreateDev(dev Dev) (*Dev, error) {
 		return nil, err
 	}
 
-	newDev := Dev{}
+	newDev := Dev_Api{}
 	err = json.Unmarshal(body, &newDev)
 	if err != nil {
 		return nil, err
