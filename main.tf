@@ -11,10 +11,15 @@ endpoint = "http://localhost:8080"
 }
 
 data "devops-bootcamp_engineer_data" "api" {
-engineers = []
 }
 
 output "api_engineers" {
   value = data.devops-bootcamp_engineer_data.api
 }
 
+data "devops-bootcamp_ops_data" "api" {
+}
+
+output "api_ops" {
+  value = data.devops-bootcamp_ops_data.api
+}

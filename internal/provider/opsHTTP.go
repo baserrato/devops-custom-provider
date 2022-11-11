@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func (c *Client) GetOps() ([]Ops, error) {
+func (c *Client) GetOps() ([]Ops_Api, error) {
 	//req, err := http.NewRequest("GET", fmt.Sprintf("%s/engineers", c.HostURL), nil)
 	res, err := http.Get("http://localhost:8080/op")
 	if err != nil {
@@ -25,7 +25,7 @@ func (c *Client) GetOps() ([]Ops, error) {
 			return "", err
 		}
 	*/
-	ops := []Ops{}
+	ops := []Ops_Api{}
 	//var results map[string]interface{}
 	err = json.Unmarshal(body, &ops)
 	if err != nil {
@@ -35,7 +35,7 @@ func (c *Client) GetOps() ([]Ops, error) {
 	return ops, nil
 }
 
-func (c *Client) CreateOp(ops Ops) (*Ops, error) {
+func (c *Client) CreateOp(ops Ops_Api) (*Ops_Api, error) {
 	rb, err := json.Marshal(ops)
 	if err != nil {
 		return nil, err
@@ -51,7 +51,7 @@ func (c *Client) CreateOp(ops Ops) (*Ops, error) {
 		return nil, err
 	}
 
-	newOp := Ops{}
+	newOp := Ops_Api{}
 	err = json.Unmarshal(body, &newOp)
 	if err != nil {
 		return nil, err

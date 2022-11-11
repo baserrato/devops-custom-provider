@@ -2,7 +2,9 @@ package provider
 
 import (
 	"context"
+	"encoding/json"
 
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
@@ -52,7 +54,13 @@ func (d *OpsDataSource) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diagn
 					},
 					"engineer_map": {
 						Type: types.MapType{
-							ElemType: types.StringType,
+							ElemType: types.ObjectType{
+								AttrTypes: map[string]attr.Type{
+									"name":  types.StringType,
+									"id":    types.StringType,
+									"email": types.StringType,
+								},
+							},
 						},
 						Computed: true,
 					},
@@ -73,17 +81,23 @@ func (d *OpsDataSource) Configure(ctx context.Context, req datasource.ConfigureR
 	d.client = client
 }
 
+func PrettyStruct(data interface{}) (string, error) {
+	val, err := json.MarshalIndent(data, "", "    ")
+	if err != nil {
+		return "", err
+	}
+	return string(val), nil
+}
+
 func (d *OpsDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
 	var state OpsDataSourceModel
 
 	ops, err := d.client.GetOps()
-	if ops == nil {
-		return
-	}
 	/*
+		struc, _ := PrettyStruct(ops)
 		resp.Diagnostics.AddError(
-			"Unexpected Data Source Configure Type",
-			fmt.Sprintf("Returned value from GetEngineers: %s.", engineers),
+			"Unexpected Resource Configure Type",
+			fmt.Sprintf("got: %s.", struc),
 		)
 	*/
 	if err != nil {
@@ -95,9 +109,14 @@ func (d *OpsDataSource) Read(ctx context.Context, req datasource.ReadRequest, re
 	}
 
 	// Map response body to model
-
 	for _, op := range ops {
-		maps, _ := types.MapValueFrom(ctx, types.StringType, op.Engineers)
+		maps, _ := types.MapValueFrom(ctx, types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+				"name":  types.StringType,
+				"id":    types.StringType,
+				"email": types.StringType,
+			},
+		}, op.Engineers)
 		opsState := opsModel{
 			Name:      types.StringValue(op.Name),
 			Id:        types.StringValue(op.Id),
@@ -113,5 +132,4 @@ func (d *OpsDataSource) Read(ctx context.Context, req datasource.ReadRequest, re
 	if resp.Diagnostics.HasError() {
 		return
 	}
-
 }
