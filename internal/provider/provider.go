@@ -83,6 +83,7 @@ func (p *ScaffoldingProvider) DataSources(ctx context.Context) []func() datasour
 		NewEngineerDataSource,
 		NewDevDataSource,
 		NewOpsDataSource,
+		NewDevOpsDataSource,
 	}
 }
 

@@ -59,3 +59,28 @@ func (c *Client) CreateEngineer(engineer Engineer_Api) (*Engineer_Api, error) {
 
 	return &newEngineer, nil
 }
+
+func (c *Client) UpdateEngineer(engineer Engineer_Api) (*Engineer_Api, error) {
+	rb, err := json.Marshal(engineer)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s/engineers", c.HostURL), strings.NewReader(string(rb)))
+	if err != nil {
+		return nil, err
+	}
+
+	body, err := c.doRequest(req)
+	if err != nil {
+		return nil, err
+	}
+
+	newEngineer := Engineer_Api{}
+	err = json.Unmarshal(body, &newEngineer)
+	if err != nil {
+		return nil, err
+	}
+
+	return &newEngineer, nil
+}

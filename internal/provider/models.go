@@ -1,5 +1,11 @@
 package provider
 
+type DevOps_Api struct {
+	Id   string    `json:"id"`
+	Devs []Dev_Api `json:"dev"`
+	Ops  []Ops_Api `json:"ops"`
+}
+
 type Dev_Api struct {
 	Id        string         `json:"id"`
 	Name      string         `json:"name"`

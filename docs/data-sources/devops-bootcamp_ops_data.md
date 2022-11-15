@@ -22,9 +22,21 @@ description: |-
 <a id="nestedatt--ops"></a>
 ### Nested Schema for `ops`
 
+Required:
+
+- `engineers` (Attributes List) (see [below for nested schema](#nestedatt--ops--engineers))
+
 Read-Only:
 
-- `engineer_map` (Map of String)
+- `id` (String)
+- `name` (String)
+
+<a id="nestedatt--ops--engineers"></a>
+### Nested Schema for `ops.engineers`
+
+Required:
+
+- `email` (String)
 - `id` (String)
 - `name` (String)
 

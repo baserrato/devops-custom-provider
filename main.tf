@@ -7,7 +7,7 @@ terraform {
 }
 
 provider "devops-bootcamp" {
-endpoint = "http://localhost:8080"
+  endpoint = "http://localhost:8080"
 }
 
 data "devops-bootcamp_engineer_data" "api" {
@@ -22,4 +22,16 @@ data "devops-bootcamp_ops_data" "api" {
 
 output "api_ops" {
   value = data.devops-bootcamp_ops_data.api
+}
+
+data "devops-bootcamp_dev_data" "api" {
+}
+
+output "api_dev" {
+  value = data.devops-bootcamp_dev_data.api
+}
+
+resource "devops-bootcamp_engineer" "api" {
+name = "bob"
+email = "bob@bob.com"
 }

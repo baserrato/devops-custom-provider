@@ -42,7 +42,7 @@ func (d *OpsDataSource) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diagn
 		Attributes: map[string]tfsdk.Attribute{
 			"ops": {
 				Computed: true,
-				Attributes: tfsdk.ListNestedAttributes(map[string]tfsdk.Attribute{
+				Attributes: tfsdk.SetNestedAttributes(map[string]tfsdk.Attribute{
 					"name": {
 						Type:     types.StringType,
 						Computed: true,
@@ -53,7 +53,7 @@ func (d *OpsDataSource) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diagn
 					},
 					"engineers": {
 						Required: true,
-						Attributes: tfsdk.ListNestedAttributes(map[string]tfsdk.Attribute{
+						Attributes: tfsdk.SetNestedAttributes(map[string]tfsdk.Attribute{
 							"name": {
 								Type:     types.StringType,
 								Required: true,
