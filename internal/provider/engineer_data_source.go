@@ -23,14 +23,8 @@ type EngineerDataSource struct {
 }
 
 // EngineerDataSourceModel describes the data source data model.
-type EngineerDataSourceModel struct {
+type EngineersModel struct {
 	Engineers []engineersModel `tfsdk:"engineers"`
-}
-
-type engineersModel struct {
-	Name  types.String `tfsdk:"name"`
-	Id    types.String `tfsdk:"id"`
-	Email types.String `tfsdk:"email"`
 }
 
 func (d *EngineerDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
@@ -73,7 +67,7 @@ func (d *EngineerDataSource) Configure(ctx context.Context, req datasource.Confi
 }
 
 func (d *EngineerDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
-	var state EngineerDataSourceModel
+	var state EngineersModel
 
 	engineers, err := d.client.GetEngineers()
 	/*
@@ -93,9 +87,9 @@ func (d *EngineerDataSource) Read(ctx context.Context, req datasource.ReadReques
 	// Map response body to model
 	for _, engineer := range engineers {
 		engineerState := engineersModel{
-			Name:  types.StringValue(engineer.Name),
-			Id:    types.StringValue(engineer.Id),
-			Email: types.StringValue(engineer.Email),
+			Name:  types.StringValue(string(engineer.Name)),
+			Id:    types.StringValue(string(engineer.Id)),
+			Email: types.StringValue(string(engineer.Email)),
 		}
 
 		state.Engineers = append(state.Engineers, engineerState)

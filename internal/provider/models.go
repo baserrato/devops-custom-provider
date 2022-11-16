@@ -18,11 +18,15 @@ type Ops_Api struct {
 	Engineers []Engineer_Api `json:"engineers"`
 }
 
-type Engineer_map struct {
-	Engineers map[string]Engineer_Api `json:"engineers"`
-}
 type Engineer_Api struct {
 	Name  string `json:"name"`
 	Id    string `json:"id"`
 	Email string `json:"email"`
 }
+
+/*
+type Engineer_Api_NoId struct {
+	Name  string `json:"name"`
+	Email string `json:"email"`
+}
+*/

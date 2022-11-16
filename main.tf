@@ -31,7 +31,3 @@ output "api_dev" {
   value = data.devops-bootcamp_dev_data.api
 }
 
-resource "devops-bootcamp_engineer" "api" {
-name = "bob"
-email = "bob@bob.com"
-}
