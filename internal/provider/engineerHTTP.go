@@ -65,7 +65,7 @@ func (c *Client) UpdateEngineer(engineer Engineer_Api) (*Engineer_Api, error) {
 		return nil, err
 	}
 
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s/engineers/", c.HostURL), strings.NewReader(string(rb)))
+	req, err := http.NewRequest("PUT", fmt.Sprintf("%s/engineers/%s", c.HostURL, engineer.Id), strings.NewReader(string(rb)))
 	if err != nil {
 		return nil, err
 	}
@@ -96,4 +96,23 @@ func (c *Client) DeleteEngineer(Id string) error {
 	}
 
 	return nil
+}
+
+func (c *Client) GetEngineer(Id string) (*Engineer_Api, error) {
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/engineers/%s", c.HostURL, Id), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	body, err := c.doRequest(req)
+	if err != nil {
+		return nil, err
+	}
+	newEngineer := Engineer_Api{}
+	err = json.Unmarshal(body, &newEngineer)
+	if err != nil {
+		return nil, err
+	}
+
+	return &newEngineer, nil
 }
