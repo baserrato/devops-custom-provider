@@ -121,8 +121,8 @@ func (r *EngineerResource) Read(ctx context.Context, req resource.ReadRequest, r
 	engineer, err := r.client.GetEngineer(state.Id.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Error Reading HashiCups Order",
-			"Could not read HashiCups order ID "+state.Id.ValueString()+": "+err.Error(),
+			"Error Reading Engineer",
+			"Could not read Engineer with that Id"+state.Id.ValueString()+": "+err.Error(),
 		)
 		return
 	}
