@@ -59,3 +59,41 @@ func (c *Client) CreateDev(dev Dev_Api) (*Dev_Api, error) {
 
 	return &newDev, nil
 }
+func (c *Client) UpdateDev(dev  Dev_Api) (*Dev_Api, error) {
+	rb, err := json.Marshal(dev)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s/dev/", c.HostURL), strings.NewReader(string(rb)))
+	if err != nil {
+		return nil, err
+	}
+
+	body, err := c.doRequest(req)
+	if err != nil {
+		return nil, err
+	}
+
+	newDev := Dev_Api{}
+	err = json.Unmarshal(body, &newDev)
+	if err != nil {
+		return nil, err
+	}
+
+	return &newDev, nil
+}
+
+func (c *Client) DeleteDev(Id string) error {
+	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/dev/%s", c.HostURL, Id), nil)
+	if err != nil {
+		return err
+	}
+
+	_, err = c.doRequest(req)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

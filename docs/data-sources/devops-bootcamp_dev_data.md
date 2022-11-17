@@ -17,14 +17,14 @@ description: |-
 
 ### Read-Only
 
-- `devs` (Attributes List) (see [below for nested schema](#nestedatt--devs))
+- `devs` (Attributes Set) (see [below for nested schema](#nestedatt--devs))
 
 <a id="nestedatt--devs"></a>
 ### Nested Schema for `devs`
 
 Required:
 
-- `engineers` (Attributes List) (see [below for nested schema](#nestedatt--devs--engineers))
+- `engineers` (Attributes Set) (see [below for nested schema](#nestedatt--devs--engineers))
 
 Read-Only:
 
