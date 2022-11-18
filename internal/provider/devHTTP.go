@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func (c *Client) GetDevs() ([]Dev_Api, error) {
+func (c *Client) GetDev(dev_id string) (*Dev_Api, error) {
 	//req, err := http.NewRequest("GET", fmt.Sprintf("%s/engineers", c.HostURL), nil)
 	res, err := http.Get("http://localhost:8080/dev")
 	if err != nil {
@@ -25,14 +25,14 @@ func (c *Client) GetDevs() ([]Dev_Api, error) {
 			return "", err
 		}
 	*/
-	devs := []Dev_Api{}
+	dev := Dev_Api{}
 	//var results map[string]interface{}
-	err = json.Unmarshal(body, &devs)
+	err = json.Unmarshal(body, &dev)
 	if err != nil {
 		return nil, err
 	}
 
-	return devs, nil
+	return &dev, nil
 }
 
 func (c *Client) CreateDev(dev Dev_Api) (*Dev_Api, error) {
@@ -59,13 +59,13 @@ func (c *Client) CreateDev(dev Dev_Api) (*Dev_Api, error) {
 
 	return &newDev, nil
 }
-func (c *Client) UpdateDev(dev  Dev_Api) (*Dev_Api, error) {
+func (c *Client) UpdateDev(dev Dev_Api) (*Dev_Api, error) {
 	rb, err := json.Marshal(dev)
 	if err != nil {
 		return nil, err
 	}
 
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s/dev/", c.HostURL), strings.NewReader(string(rb)))
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s/dev/%s", c.HostURL, dev.Id), strings.NewReader(string(rb)))
 	if err != nil {
 		return nil, err
 	}

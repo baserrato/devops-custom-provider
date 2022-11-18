@@ -35,7 +35,7 @@ type OpModel struct {
 }
 
 func (r *OpsResourc) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	resp.TypeName = req.ProviderTypeName + "_engineer"
+	resp.TypeName = req.ProviderTypeName + "_ops"
 }
 
 func (r *OpsResourc) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diagnostics) {
@@ -78,7 +78,7 @@ func (r *OpsResourc) Configure(ctx context.Context, req resource.ConfigureReques
 }
 
 func (r *OpsResourc) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	var plan opModel 
+	var plan opModel
 	diags := req.Plan.Get(ctx, &plan)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
@@ -90,7 +90,6 @@ func (r *OpsResourc) Create(ctx context.Context, req resource.CreateRequest, res
 	item.Id = string(plan.Id.Value)
 	newEngineer, err := r.client.CreateOp(item)
 
-
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error creating engineer",
@@ -100,7 +99,7 @@ func (r *OpsResourc) Create(ctx context.Context, req resource.CreateRequest, res
 	}
 	plan.Name = types.StringValue(newEngineer.Name)
 	plan.Id = types.StringValue(newEngineer.Id)
-	plan.Id = types.StringValue(newEngineer.Id)  //ask ryan about this line
+	plan.Id = types.StringValue(newEngineer.Id) //ask ryan about this line
 
 	diags = resp.State.Set(ctx, plan)
 	resp.Diagnostics.Append(diags...)
@@ -182,7 +181,7 @@ func (r *OpsResourc) Update(ctx context.Context, req resource.UpdateRequest, res
 }
 
 func (r *OpsResourc) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var state opModel 
+	var state opModel
 	diags := req.State.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
