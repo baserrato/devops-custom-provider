@@ -41,7 +41,7 @@ func (r *DevOpsResource) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diag
 		Attributes: map[string]tfsdk.Attribute{
 			"id": {
 				Computed:            true,
-				MarkdownDescription: "identifier for a dev group",
+				MarkdownDescription: "identifier for a devops group",
 				PlanModifiers: tfsdk.AttributePlanModifiers{
 					resource.UseStateForUnknown(),
 				},
@@ -56,10 +56,10 @@ func (r *DevOpsResource) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diag
 					},
 					"id": {
 						Type:     types.StringType,
-						Required: true,
+						Optional: true,
 					},
 					"engineers": {
-						Optional: true,
+						Computed: true,
 						Attributes: tfsdk.ListNestedAttributes(map[string]tfsdk.Attribute{
 							"name": {
 								Type:     types.StringType,
@@ -67,7 +67,7 @@ func (r *DevOpsResource) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diag
 							},
 							"id": {
 								Type:     types.StringType,
-								Required: true,
+								Computed: true,
 							},
 							"email": {
 								Type:     types.StringType,
@@ -86,10 +86,10 @@ func (r *DevOpsResource) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diag
 					},
 					"id": {
 						Type:     types.StringType,
-						Required: true,
+						Optional: true,
 					},
 					"engineers": {
-						Optional: true,
+						Computed: true,
 						Attributes: tfsdk.ListNestedAttributes(map[string]tfsdk.Attribute{
 							"name": {
 								Type:     types.StringType,
@@ -97,7 +97,7 @@ func (r *DevOpsResource) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diag
 							},
 							"id": {
 								Type:     types.StringType,
-								Required: true,
+								Computed: true,
 							},
 							"email": {
 								Type:     types.StringType,
@@ -132,33 +132,13 @@ func (r *DevOpsResource) Create(ctx context.Context, req resource.CreateRequest,
 
 	var item DevOps_Api
 	for _, op := range plan.Ops {
-		var newEngineers []Engineer_Api
-		for _, eng := range op.Engineers {
-			newEngineers = append(newEngineers, Engineer_Api{
-				Name:  eng.Name.ValueString(),
-				Id:    eng.Id.ValueString(),
-				Email: eng.Email.ValueString(),
-			})
-		}
 		item.Ops = append(item.Ops, Ops_Api{
-			Name:      op.Name.ValueString(),
-			Id:        op.Id.ValueString(),
-			Engineers: newEngineers,
+			Id: op.Id.ValueString(),
 		})
 	}
 	for _, dev := range plan.Dev {
-		var newEngineers []Engineer_Api
-		for _, eng := range dev.Engineers {
-			newEngineers = append(newEngineers, Engineer_Api{
-				Name:  eng.Name.ValueString(),
-				Id:    eng.Id.ValueString(),
-				Email: eng.Email.ValueString(),
-			})
-		}
 		item.Devs = append(item.Devs, Dev_Api{
-			Name:      dev.Name.ValueString(),
-			Id:        dev.Id.ValueString(),
-			Engineers: newEngineers,
+			Id: dev.Id.ValueString(),
 		})
 	}
 	newDevOps, err := r.client.CreateDevOps(item)
@@ -270,46 +250,7 @@ func (r *DevOpsResource) Read(ctx context.Context, req resource.ReadRequest, res
 }
 
 func (r *DevOpsResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	var plan devModel
-	diags := req.Plan.Get(ctx, &plan)
-	resp.Diagnostics.Append(diags...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
 
-	var item Dev_Api
-	item.Name = string(plan.Name.ValueString())
-	item.Id = string(plan.Id.ValueString())
-	for _, eng := range plan.Engineers {
-		item.Engineers = append(item.Engineers, Engineer_Api{
-			Name:  eng.Name.ValueString(),
-			Id:    eng.Id.ValueString(),
-			Email: eng.Email.ValueString(),
-		})
-	}
-	newDev, err := r.client.UpdateDev(item)
-	if err != nil {
-		resp.Diagnostics.AddError(
-			"Error updating dev",
-			"Could not updating dev, unexpected error: "+err.Error(),
-		)
-		return
-	}
-	plan.Engineers = []engineersModel{}
-	plan.Name = types.StringValue(newDev.Name)
-	plan.Id = types.StringValue(newDev.Id)
-	for _, eng := range newDev.Engineers {
-		plan.Engineers = append(plan.Engineers, engineersModel{
-			Name:  types.StringValue(string(eng.Name)),
-			Id:    types.StringValue(string(eng.Id)),
-			Email: types.StringValue(string(eng.Email)),
-		})
-	}
-	diags = resp.State.Set(ctx, plan)
-	resp.Diagnostics.Append(diags...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
 }
 
 func (r *DevOpsResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
