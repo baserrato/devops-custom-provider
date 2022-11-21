@@ -100,8 +100,8 @@ func (r *OpsResource) Create(ctx context.Context, req resource.CreateRequest, re
 
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Error creating dev",
-			"Could not create dev, unexpected error: "+err.Error(),
+			"Error creating Ops",
+			"Could not create Ops, unexpected error: "+err.Error(),
 		)
 		return
 	}
@@ -135,8 +135,8 @@ func (r *OpsResource) Read(ctx context.Context, req resource.ReadRequest, resp *
 	ops, err := r.client.GetOp(state.Id.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Error Reading Dev",
-			"Could not read Dev with that Id "+state.Id.ValueString()+": "+err.Error(),
+			"Error Reading Ops",
+			"Could not read Ops with that Id "+state.Id.ValueString()+": "+err.Error(),
 		)
 		return
 	}
@@ -158,15 +158,7 @@ func (r *OpsResource) Read(ctx context.Context, req resource.ReadRequest, resp *
 }
 
 func (r *OpsResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	// Retrieve values from pla	
-		var plan *EngineerModel
-		diags := req.Plan.Get(ctx, &plan)
-		resp.Diagnostics.Append(diags...)
-		if resp.Diagnostics.HasError() {
-			return
-		}
-func (r *OpsResourc) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	var plan opModel 
+	var plan opsModel 
 	diags := req.Plan.Get(ctx, &plan)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
@@ -175,6 +167,7 @@ func (r *OpsResourc) Update(ctx context.Context, req resource.UpdateRequest, res
 
 	var item Ops_Api 
 	item.Name = string(plan.Name.ValueString())
+	item.Id = string(plan.Id.ValueString())
 	for _, eng := range plan.Engineers {
 		item.Engineers = append(item.Engineers, Engineer_Api{
 			Name:  eng.Name.ValueString(),
@@ -182,26 +175,25 @@ func (r *OpsResourc) Update(ctx context.Context, req resource.UpdateRequest, res
 			Email: eng.Email.ValueString(),
 		})
 	}
-	newOp, err := r.client.UpdateOps(item)
-
+	newOps, err := r.client.UpdateOps(item)
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Error creating Ops",
-			"Could not create Ops, unexpected error: "+err.Error(),
+			"Error updating Ops",
+			"Could not updating Ops, unexpected error: "+err.Error(),
 		)
 		return
 	}
-	var state opModel 
-	state.Name = types.StringValue(newOp.Name)
-	state.Id = types.StringValue(newOp.Id)
-	for _, eng := range newOp.Engineers {
-		state.Engineers = append(state.Engineers, engineersModel{
+	plan.Engineers = []engineersModel{}
+	plan.Name = types.StringValue(newOps.Name)
+	plan.Id = types.StringValue(newOps.Id)
+	for _, eng := range newOps.Engineers {
+		plan.Engineers = append(plan.Engineers, engineersModel{
 			Name:  types.StringValue(string(eng.Name)),
 			Id:    types.StringValue(string(eng.Id)),
 			Email: types.StringValue(string(eng.Email)),
 		})
 	}
-	diags = resp.State.Set(ctx, state)
+	diags = resp.State.Set(ctx, plan)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
