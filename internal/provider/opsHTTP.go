@@ -7,7 +7,6 @@ import (
 	"strings"
 )
 
-
 func (c *Client) GetOp(Id string) (*Ops_Api, error) {
 	//req, err := http.NewRequest("GET", fmt.Sprintf("%s/engineers", c.HostURL), nil)
 	res, err := http.NewRequest("GET", fmt.Sprintf("%s/ops/%s", c.HostURL, Id), nil)
@@ -19,7 +18,6 @@ func (c *Client) GetOp(Id string) (*Ops_Api, error) {
 	if err != nil {
 		return nil, err
 	}
-
 
 	ops := Ops_Api{}
 
@@ -64,7 +62,7 @@ func (c *Client) CreateOp(ops Ops_Api) (*Ops_Api, error) {
 		return nil, err
 	}
 
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s/ops", c.HostURL), strings.NewReader(string(rb)))
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s/op", c.HostURL), strings.NewReader(string(rb)))
 	if err != nil {
 		return nil, err
 	}

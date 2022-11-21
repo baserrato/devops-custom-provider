@@ -87,7 +87,7 @@ func (r *OpsResource) Create(ctx context.Context, req resource.CreateRequest, re
 		return
 	}
 
-	var item Ops_Api 
+	var item Ops_Api
 	item.Name = string(plan.Name.ValueString())
 	for _, eng := range plan.Engineers {
 		item.Engineers = append(item.Engineers, Engineer_Api{
@@ -120,7 +120,7 @@ func (r *OpsResource) Create(ctx context.Context, req resource.CreateRequest, re
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	
+
 }
 
 func (r *OpsResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
@@ -158,14 +158,14 @@ func (r *OpsResource) Read(ctx context.Context, req resource.ReadRequest, resp *
 }
 
 func (r *OpsResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	var plan opsModel 
+	var plan opsModel
 	diags := req.Plan.Get(ctx, &plan)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	var item Ops_Api 
+	var item Ops_Api
 	item.Name = string(plan.Name.ValueString())
 	item.Id = string(plan.Id.ValueString())
 	for _, eng := range plan.Engineers {

@@ -12,25 +12,25 @@ provider "devops-bootcamp" {
 
 
 resource "devops-bootcamp_engineer" "bobby" {
-  name = "Bobby"
+  name  = "Bobby"
   email = "Bobby@gmail.com"
 }
 resource "devops-bootcamp_engineer" "bob" {
-  name = "Bob"
+  name  = "Bob"
   email = "Bob222@gmail.com"
 }
 
 resource "devops-bootcamp_engineer" "bobb" {
-  name = "Bobb"
+  name  = "Bobb"
   email = "Bobb@gmail.com"
 }
 resource "devops-bootcamp_dev" "ferret" {
-  name = "ferret"
-  engineers = [{id = devops-bootcamp_engineer.bobb.id}]
+  name      = "ferret"
+  engineers = [{ id = devops-bootcamp_engineer.bobb.id }]
 }
 resource "devops-bootcamp_ops" "bengal" {
-  name = "bengal"
-  engineers = [{id = devops-bootcamp_engineer.bobb.id}]
+  name      = "bengal"
+  engineers = [{ id = devops-bootcamp_engineer.bobb.id }]
 }
 
 
