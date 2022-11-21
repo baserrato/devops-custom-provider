@@ -10,24 +10,33 @@ provider "devops-bootcamp" {
   endpoint = "http://localhost:8080"
 }
 
-data "devops-bootcamp_engineer_data" "api" {
+
+resource "devops-bootcamp_engineer" "bobby" {
+  name = "Bobby"
+  email = "Bobby@gmail.com"
+}
+resource "devops-bootcamp_engineer" "bob" {
+  name = "Bob"
+  email = "Bob222@gmail.com"
 }
 
-output "api_engineers" {
-  value = data.devops-bootcamp_engineer_data.api
+resource "devops-bootcamp_engineer" "bobb" {
+  name = "Bobb"
+  email = "Bobb@gmail.com"
+}
+resource "devops-bootcamp_dev" "ferret" {
+  name = "ferret"
+  engineers = [{id = devops-bootcamp_engineer.bobb.id}]
+}
+resource "devops-bootcamp_ops" "bengal" {
+  name = "bengal"
+  engineers = [{id = devops-bootcamp_engineer.bobb.id}]
 }
 
-data "devops-bootcamp_ops_data" "api" {
-}
 
-output "api_ops" {
-  value = data.devops-bootcamp_ops_data.api
-}
 
-data "devops-bootcamp_dev_data" "api" {
-}
 
-output "api_dev" {
-  value = data.devops-bootcamp_dev_data.api
-}
+
+
+
 
