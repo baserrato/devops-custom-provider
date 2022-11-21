@@ -8,9 +8,9 @@ import (
 	"strings"
 )
 
-func (c *Client) GetOps() ([]Ops_Api, error) {
+func (c *Client) GetOp(op_id string) (*Ops_Api, error) {
 	//req, err := http.NewRequest("GET", fmt.Sprintf("%s/engineers", c.HostURL), nil)
-	res, err := http.Get("http://localhost:8080/op")
+	res, err := http.Get("http://localhost:8080/Op")
 	if err != nil {
 		return nil, err
 	}
@@ -25,14 +25,14 @@ func (c *Client) GetOps() ([]Ops_Api, error) {
 			return "", err
 		}
 	*/
-	ops := []Ops_Api{}
+	Op := Dev_Api{}
 	//var results map[string]interface{}
-	err = json.Unmarshal(body, &ops)
+	err = json.Unmarshal(body, &Op)
 	if err != nil {
 		return nil, err
 	}
 
-	return ops, nil
+	return &Op, nil
 }
 
 func (c *Client) UpdateOps(ops Ops_Api) (*Ops_Api, error) {
