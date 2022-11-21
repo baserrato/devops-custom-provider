@@ -122,7 +122,7 @@ func (r *EngineerResource) Read(ctx context.Context, req resource.ReadRequest, r
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error Reading Engineer",
-			"Could not read Engineer with that Id"+state.Id.ValueString()+": "+err.Error(),
+			"Could not read Engineer with that Id "+state.Id.ValueString()+": "+err.Error(),
 		)
 		return
 	}

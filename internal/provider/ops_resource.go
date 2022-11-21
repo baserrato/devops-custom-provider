@@ -11,30 +11,25 @@ import (
 )
 
 // Ensure provider defined types fully satisfy framework interfaces
-var _ resource.Resource = &OpsResourc{}
-var _ resource.ResourceWithImportState = &OpsResourc{}
+var _ resource.Resource = &OpsResource{}
+var _ resource.ResourceWithImportState = &OpsResource{}
 
-func NewOpResource() resource.Resource {
-	return &OpsResourc{}
+func NewOpsResource() resource.Resource {
+	return &OpsResource{}
 }
 
 // ExampleResource defines the resource implementation.
-type OpsResourc struct {
+type OpsResource struct {
 	client *Client
 }
 
 // ExampleResourceModel describes the resource data model.
-type opModel struct {
-	Name      types.String     `tfsdk:"name"`
-	Id        types.String     `tfsdk:"id"`
-	Engineers []engineersModel `tfsdk:"engineers"`
+
+func (r *OpsResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = req.ProviderTypeName + "_ops"
 }
 
-func (r *OpsResourc) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	resp.TypeName = req.ProviderTypeName + "_op"
-}
-
-func (r *OpsResourc) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diagnostics) {
+func (r *OpsResource) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diagnostics) {
 	return tfsdk.Schema{
 		// This description is used by the documentation generator and the language server.
 		MarkdownDescription: "Ops stuff",
@@ -46,7 +41,7 @@ func (r *OpsResourc) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diagnost
 			},
 			"id": {
 				Computed:            true,
-				MarkdownDescription: "identifier for a Ops group",
+				MarkdownDescription: "identifier for a ops group",
 				PlanModifiers: tfsdk.AttributePlanModifiers{
 					resource.UseStateForUnknown(),
 				},
@@ -73,7 +68,7 @@ func (r *OpsResourc) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diagnost
 	}, nil
 }
 
-func (r *OpsResourc) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
+func (r *OpsResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	// Prevent panic if the provider has not been configured.
 	if req.ProviderData == nil {
 		return
@@ -84,8 +79,8 @@ func (r *OpsResourc) Configure(ctx context.Context, req resource.ConfigureReques
 	r.client = client
 }
 
-func (r *OpsResourc) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	var plan opModel 
+func (r *OpsResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+	var plan opsModel
 	diags := req.Plan.Get(ctx, &plan)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
@@ -105,12 +100,12 @@ func (r *OpsResourc) Create(ctx context.Context, req resource.CreateRequest, res
 
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Error creating Ops",
-			"Could not create Ops, unexpected error: "+err.Error(),
+			"Error creating dev",
+			"Could not create dev, unexpected error: "+err.Error(),
 		)
 		return
 	}
-	var state opModel 
+	var state opsModel
 	state.Name = types.StringValue(newOp.Name)
 	state.Id = types.StringValue(newOp.Id)
 	for _, eng := range newOp.Engineers {
@@ -128,8 +123,8 @@ func (r *OpsResourc) Create(ctx context.Context, req resource.CreateRequest, res
 	
 }
 
-func (r *OpsResourc) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
-	var state opModel 
+func (r *OpsResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+	var state opsModel
 
 	// Read Terraform prior state data into the model
 	diags := req.State.Get(ctx, &state)
@@ -137,17 +132,17 @@ func (r *OpsResourc) Read(ctx context.Context, req resource.ReadRequest, resp *r
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	Ops, err := r.client.GetOp(state.Id.ValueString())
+	ops, err := r.client.GetOp(state.Id.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Error Reading Ops",
-			"Could not read Ops with that Id"+state.Id.ValueString()+": "+err.Error(),
+			"Error Reading Dev",
+			"Could not read Dev with that Id "+state.Id.ValueString()+": "+err.Error(),
 		)
 		return
 	}
-	state.Name = types.StringValue(Ops.Name)
-	state.Id = types.StringValue(Ops.Id)
-	for _, eng := range Ops.Engineers {
+	state.Name = types.StringValue(ops.Name)
+	state.Id = types.StringValue(ops.Id)
+	for _, eng := range ops.Engineers {
 		state.Engineers = append(state.Engineers, engineersModel{
 			Name:  types.StringValue(string(eng.Name)),
 			Id:    types.StringValue(string(eng.Id)),
@@ -162,6 +157,14 @@ func (r *OpsResourc) Read(ctx context.Context, req resource.ReadRequest, resp *r
 	}
 }
 
+func (r *OpsResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+	// Retrieve values from pla	
+		var plan *EngineerModel
+		diags := req.Plan.Get(ctx, &plan)
+		resp.Diagnostics.Append(diags...)
+		if resp.Diagnostics.HasError() {
+			return
+		}
 func (r *OpsResourc) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 	var plan opModel 
 	diags := req.Plan.Get(ctx, &plan)
@@ -205,8 +208,8 @@ func (r *OpsResourc) Update(ctx context.Context, req resource.UpdateRequest, res
 	}
 }
 
-func (r *OpsResourc) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var state opModel 
+func (r *OpsResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	var state opsModel
 	diags := req.State.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
@@ -216,14 +219,14 @@ func (r *OpsResourc) Delete(ctx context.Context, req resource.DeleteRequest, res
 	err := r.client.DeleteOps(state.Id.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Error Deleting HashiCups Order",
-			"Could not delete order, unexpected error: "+err.Error(),
+			"Error Deleting Ops",
+			"Could not delete op, unexpected error: "+err.Error(),
 		)
 		return
 	}
 
 }
 
-func (r *OpsResourc) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+func (r *OpsResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 }

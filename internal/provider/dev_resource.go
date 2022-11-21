@@ -110,17 +110,17 @@ func (r *DevResource) Create(ctx context.Context, req resource.CreateRequest, re
 		)
 		return
 	}
-	var state devModel
-	state.Name = types.StringValue(newDev.Name)
-	state.Id = types.StringValue(newDev.Id)
+	plan.Engineers = []engineersModel{}
+	plan.Name = types.StringValue(newDev.Name)
+	plan.Id = types.StringValue(newDev.Id)
 	for _, eng := range newDev.Engineers {
-		state.Engineers = append(state.Engineers, engineersModel{
+		plan.Engineers = append(plan.Engineers, engineersModel{
 			Name:  types.StringValue(string(eng.Name)),
 			Id:    types.StringValue(string(eng.Id)),
 			Email: types.StringValue(string(eng.Email)),
 		})
 	}
-	diags = resp.State.Set(ctx, state)
+	diags = resp.State.Set(ctx, plan)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -140,12 +140,13 @@ func (r *DevResource) Read(ctx context.Context, req resource.ReadRequest, resp *
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error Reading Dev",
-			"Could not read Dev with that Id"+state.Id.ValueString()+": "+err.Error(),
+			"Could not read Dev with that Id "+state.Id.ValueString()+": "+err.Error(),
 		)
 		return
 	}
 	state.Name = types.StringValue(dev.Name)
 	state.Id = types.StringValue(dev.Id)
+	state.Engineers = []engineersModel{}
 	for _, eng := range dev.Engineers {
 		state.Engineers = append(state.Engineers, engineersModel{
 			Name:  types.StringValue(string(eng.Name)),
@@ -171,6 +172,7 @@ func (r *DevResource) Update(ctx context.Context, req resource.UpdateRequest, re
 
 	var item Dev_Api
 	item.Name = string(plan.Name.ValueString())
+	item.Id = string(plan.Id.ValueString())
 	for _, eng := range plan.Engineers {
 		item.Engineers = append(item.Engineers, Engineer_Api{
 			Name:  eng.Name.ValueString(),
@@ -179,25 +181,24 @@ func (r *DevResource) Update(ctx context.Context, req resource.UpdateRequest, re
 		})
 	}
 	newDev, err := r.client.UpdateDev(item)
-
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Error creating dev",
-			"Could not create dev, unexpected error: "+err.Error(),
+			"Error updating dev",
+			"Could not updating dev, unexpected error: "+err.Error(),
 		)
 		return
 	}
-	var state devModel
-	state.Name = types.StringValue(newDev.Name)
-	state.Id = types.StringValue(newDev.Id)
+	plan.Engineers = []engineersModel{}
+	plan.Name = types.StringValue(newDev.Name)
+	plan.Id = types.StringValue(newDev.Id)
 	for _, eng := range newDev.Engineers {
-		state.Engineers = append(state.Engineers, engineersModel{
+		plan.Engineers = append(plan.Engineers, engineersModel{
 			Name:  types.StringValue(string(eng.Name)),
 			Id:    types.StringValue(string(eng.Id)),
 			Email: types.StringValue(string(eng.Email)),
 		})
 	}
-	diags = resp.State.Set(ctx, state)
+	diags = resp.State.Set(ctx, plan)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
