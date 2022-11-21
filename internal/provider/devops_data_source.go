@@ -23,16 +23,6 @@ type DevOpsDataSource struct {
 	client *Client
 }
 
-// EngineerDataSourceModel describes the data source data model.
-type DevOpsDataSourceModel struct {
-	DevOps []devOpsModel `tfsdk:"devops"`
-}
-type devOpsModel struct {
-	Id  types.String `tfsdk:"id"`
-	Dev []devModel   `tfsdk:"dev"`
-	Ops []opsModel   `tfsdk:"ops"`
-}
-
 func (d *DevOpsDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_devops_data"
 }
