@@ -3,36 +3,29 @@ package provider
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"strings"
 )
 
-func (c *Client) GetOps() ([]Ops_Api, error) {
+func (c *Client) GetOp(Id string) (*Ops_Api, error) {
 	//req, err := http.NewRequest("GET", fmt.Sprintf("%s/engineers", c.HostURL), nil)
-	res, err := http.Get("http://localhost:8080/op")
+	res, err := http.NewRequest("GET", fmt.Sprintf("%s/ops/%s", c.HostURL, Id), nil)
 	if err != nil {
 		return nil, err
 	}
-	defer res.Body.Close()
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := c.doRequest(res)
 	if err != nil {
 		return nil, err
 	}
-	/*
-		body, err := c.doRequest(res, nil)
-		if err != nil {
-			return "", err
-		}
-	*/
-	ops := []Ops_Api{}
+
+	ops := Ops_Api{}
 	//var results map[string]interface{}
 	err = json.Unmarshal(body, &ops)
 	if err != nil {
 		return nil, err
 	}
 
-	return ops, nil
+	return &ops, nil
 }
 
 func (c *Client) UpdateOps(ops Ops_Api) (*Ops_Api, error) {

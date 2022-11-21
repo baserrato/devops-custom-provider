@@ -11,62 +11,64 @@ import (
 )
 
 // Ensure provider defined types fully satisfy framework interfaces
-var _ resource.Resource = &OpsResourc{}
-var _ resource.ResourceWithImportState = &OpsResourc{}
+var _ resource.Resource = &OpsResource{}
+var _ resource.ResourceWithImportState = &OpsResource{}
 
 func NewOpsResource() resource.Resource {
-	return &OpsResourc{}
+	return &OpsResource{}
 }
 
 // ExampleResource defines the resource implementation.
-type OpsResourc struct {
+type OpsResource struct {
 	client *Client
 }
 
 // ExampleResourceModel describes the resource data model.
-type opModel struct {
-	Name  types.String `tfsdk:"name"`
-	Id    types.String `tfsdk:"id"`
-	Email types.String `tfsdk:"email"`
-}
 
-type OpModel struct {
-	Engineers []opModel `tfsdk:"engineers"`
-}
-
-func (r *OpsResourc) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+func (r *OpsResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_ops"
 }
 
-func (r *OpsResourc) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diagnostics) {
+func (r *OpsResource) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diagnostics) {
 	return tfsdk.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "Engineer stuff",
-
+		MarkdownDescription: "Ops stuff",
 		Attributes: map[string]tfsdk.Attribute{
 			"name": {
 				Required:            true,
-				MarkdownDescription: "name for an Engineer",
+				MarkdownDescription: "name for a Ops group",
 				Type:                types.StringType,
 			},
 			"id": {
 				Computed:            true,
-				MarkdownDescription: "identifier for an Engineer",
+				MarkdownDescription: "identifier for a ops group",
 				PlanModifiers: tfsdk.AttributePlanModifiers{
 					resource.UseStateForUnknown(),
 				},
 				Type: types.StringType,
 			},
-			"email": {
-				Required:            true,
-				MarkdownDescription: "email for an Engineer",
-				Type:                types.StringType,
+			"engineers": {
+				Optional: true,
+				Attributes: tfsdk.ListNestedAttributes(map[string]tfsdk.Attribute{
+					"name": {
+						Type:     types.StringType,
+						Computed: true,
+					},
+					"id": {
+						Type:     types.StringType,
+						Required: true,
+					},
+					"email": {
+						Type:     types.StringType,
+						Computed: true,
+					},
+				}),
 			},
 		},
 	}, nil
 }
 
-func (r *OpsResourc) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
+func (r *OpsResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	// Prevent panic if the provider has not been configured.
 	if req.ProviderData == nil {
 		return
@@ -77,8 +79,8 @@ func (r *OpsResourc) Configure(ctx context.Context, req resource.ConfigureReques
 	r.client = client
 }
 
-func (r *OpsResourc) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	var plan opModel
+func (r *OpsResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+	var plan opsModel
 	diags := req.Plan.Get(ctx, &plan)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
@@ -87,21 +89,33 @@ func (r *OpsResourc) Create(ctx context.Context, req resource.CreateRequest, res
 
 	var item Ops_Api
 	item.Name = string(plan.Name.ValueString())
-	item.Id = string(plan.Id.Value)
-	newEngineer, err := r.client.CreateOp(item)
+	for _, eng := range plan.Engineers {
+		item.Engineers = append(item.Engineers, Engineer_Api{
+			Name:  eng.Name.ValueString(),
+			Id:    eng.Id.ValueString(),
+			Email: eng.Email.ValueString(),
+		})
+	}
+	newOp, err := r.client.CreateOp(item)
 
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Error creating engineer",
-			"Could not create engineer, unexpected error: "+err.Error(),
+			"Error creating dev",
+			"Could not create dev, unexpected error: "+err.Error(),
 		)
 		return
 	}
-	plan.Name = types.StringValue(newEngineer.Name)
-	plan.Id = types.StringValue(newEngineer.Id)
-	plan.Id = types.StringValue(newEngineer.Id) //ask ryan about this line
-
-	diags = resp.State.Set(ctx, plan)
+	var state opsModel
+	state.Name = types.StringValue(newOp.Name)
+	state.Id = types.StringValue(newOp.Id)
+	for _, eng := range newOp.Engineers {
+		state.Engineers = append(state.Engineers, engineersModel{
+			Name:  types.StringValue(string(eng.Name)),
+			Id:    types.StringValue(string(eng.Id)),
+			Email: types.StringValue(string(eng.Email)),
+		})
+	}
+	diags = resp.State.Set(ctx, state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -109,30 +123,41 @@ func (r *OpsResourc) Create(ctx context.Context, req resource.CreateRequest, res
 
 }
 
-func (r *OpsResourc) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
-	/*
-		var data *EngineersModel
+func (r *OpsResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+	var state opsModel
 
-		// Read Terraform prior state data into the model
-		resp.Diagnostics.Append(req.State.Get(ctx, &data)...)
+	// Read Terraform prior state data into the model
+	diags := req.State.Get(ctx, &state)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	ops, err := r.client.GetOp(state.Id.ValueString())
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Error Reading Dev",
+			"Could not read Dev with that Id "+state.Id.ValueString()+": "+err.Error(),
+		)
+		return
+	}
+	state.Name = types.StringValue(ops.Name)
+	state.Id = types.StringValue(ops.Id)
+	for _, eng := range ops.Engineers {
+		state.Engineers = append(state.Engineers, engineersModel{
+			Name:  types.StringValue(string(eng.Name)),
+			Id:    types.StringValue(string(eng.Id)),
+			Email: types.StringValue(string(eng.Email)),
+		})
+	}
 
-		if resp.Diagnostics.HasError() {
-			return
-		}
-	*/
-	// If applicable, this is a great opportunity to initialize any necessary
-	// provider client data and make a call using it.
-	// httpResp, err := d.client.Do(httpReq)
-	// if err != nil {
-	//     resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read example, got error: %s", err))
-	//     return
-	// }
-
-	// Save updated data into Terraform state
-	//resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	diags = resp.State.Set(ctx, state)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 }
 
-func (r *OpsResourc) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+func (r *OpsResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 	// Retrieve values from plan
 	/*
 		var plan *EngineerModel
@@ -180,8 +205,8 @@ func (r *OpsResourc) Update(ctx context.Context, req resource.UpdateRequest, res
 	*/
 }
 
-func (r *OpsResourc) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var state opModel
+func (r *OpsResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	var state opsModel
 	diags := req.State.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
@@ -191,14 +216,14 @@ func (r *OpsResourc) Delete(ctx context.Context, req resource.DeleteRequest, res
 	err := r.client.DeleteOps(state.Id.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Error Deleting HashiCups Order",
-			"Could not delete order, unexpected error: "+err.Error(),
+			"Error Deleting Ops",
+			"Could not delete op, unexpected error: "+err.Error(),
 		)
 		return
 	}
 
 }
 
-func (r *OpsResourc) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+func (r *OpsResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 }

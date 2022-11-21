@@ -94,45 +94,40 @@ func PrettyStruct(data interface{}) (string, error) {
 }
 
 func (d *OpsDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
-	var state OpsDataSourceModel
-
-	ops, err := d.client.GetOps()
 	/*
-		struc, _ := PrettyStruct(ops)
-		resp.Diagnostics.AddError(
-			"Unexpected Resource Configure Type",
-			fmt.Sprintf("got: %s.", struc),
-		)
+		var state OpsDataSourceModel
+
+		ops, err := d.client.GetOps()
+		if err != nil {
+			resp.Diagnostics.AddError(
+				"Unable to Read Engineers",
+				err.Error(),
+			)
+			return
+		}
+
+		// Map response body to model
+		for _, op := range ops {
+			opsState := opsModel{
+				Name: types.StringValue(op.Name),
+				Id:   types.StringValue(op.Id),
+			}
+			for _, eng := range op.Engineers {
+				opsState.Engineers = append(opsState.Engineers, engineersModel{
+					Name:  types.StringValue(string(eng.Name)),
+					Id:    types.StringValue(string(eng.Id)),
+					Email: types.StringValue(string(eng.Email)),
+				})
+			}
+
+			state.Ops = append(state.Ops, opsState)
+		}
+
+		// Set state
+		diags := resp.State.Set(ctx, &state)
+		resp.Diagnostics.Append(diags...)
+		if resp.Diagnostics.HasError() {
+			return
+		}
 	*/
-	if err != nil {
-		resp.Diagnostics.AddError(
-			"Unable to Read Engineers",
-			err.Error(),
-		)
-		return
-	}
-
-	// Map response body to model
-	for _, op := range ops {
-		opsState := opsModel{
-			Name: types.StringValue(op.Name),
-			Id:   types.StringValue(op.Id),
-		}
-		for _, eng := range op.Engineers {
-			opsState.Engineers = append(opsState.Engineers, engineersModel{
-				Name:  types.StringValue(string(eng.Name)),
-				Id:    types.StringValue(string(eng.Id)),
-				Email: types.StringValue(string(eng.Email)),
-			})
-		}
-
-		state.Ops = append(state.Ops, opsState)
-	}
-
-	// Set state
-	diags := resp.State.Set(ctx, &state)
-	resp.Diagnostics.Append(diags...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
 }

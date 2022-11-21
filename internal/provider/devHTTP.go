@@ -3,28 +3,20 @@ package provider
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"strings"
 )
 
 func (c *Client) GetDev(dev_id string) (*Dev_Api, error) {
 	//req, err := http.NewRequest("GET", fmt.Sprintf("%s/engineers", c.HostURL), nil)
-	res, err := http.Get("http://localhost:8080/dev")
+	res, err := http.NewRequest("GET", fmt.Sprintf("%s/dev/%s", c.HostURL, dev_id), nil)
 	if err != nil {
 		return nil, err
 	}
-	defer res.Body.Close()
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := c.doRequest(res)
 	if err != nil {
 		return nil, err
 	}
-	/*
-		body, err := c.doRequest(res, nil)
-		if err != nil {
-			return "", err
-		}
-	*/
 	dev := Dev_Api{}
 	//var results map[string]interface{}
 	err = json.Unmarshal(body, &dev)
@@ -65,7 +57,7 @@ func (c *Client) UpdateDev(dev Dev_Api) (*Dev_Api, error) {
 		return nil, err
 	}
 
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s/dev/%s", c.HostURL, dev.Id), strings.NewReader(string(rb)))
+	req, err := http.NewRequest("PUT", fmt.Sprintf("%s/dev/%s", c.HostURL, dev.Id), strings.NewReader(string(rb)))
 	if err != nil {
 		return nil, err
 	}
