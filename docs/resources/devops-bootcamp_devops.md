@@ -22,33 +22,27 @@ DevOps stuff
 
 ### Read-Only
 
-- `id` (String) identifier for a dev group
+- `id` (String) identifier for a devops group
 
 <a id="nestedatt--dev"></a>
 ### Nested Schema for `dev`
 
-Required:
+Optional:
 
 - `id` (String)
 
-Optional:
-
-- `engineers` (Attributes List) (see [below for nested schema](#nestedatt--dev--engineers))
-
 Read-Only:
 
+- `engineers` (Attributes List) (see [below for nested schema](#nestedatt--dev--engineers))
 - `name` (String)
 
 <a id="nestedatt--dev--engineers"></a>
 ### Nested Schema for `dev.engineers`
 
-Required:
-
-- `id` (String)
-
 Read-Only:
 
 - `email` (String)
+- `id` (String)
 - `name` (String)
 
 
@@ -56,28 +50,22 @@ Read-Only:
 <a id="nestedatt--ops"></a>
 ### Nested Schema for `ops`
 
-Required:
+Optional:
 
 - `id` (String)
 
-Optional:
-
-- `engineers` (Attributes List) (see [below for nested schema](#nestedatt--ops--engineers))
-
 Read-Only:
 
+- `engineers` (Attributes List) (see [below for nested schema](#nestedatt--ops--engineers))
 - `name` (String)
 
 <a id="nestedatt--ops--engineers"></a>
 ### Nested Schema for `ops.engineers`
 
-Required:
-
-- `id` (String)
-
 Read-Only:
 
 - `email` (String)
+- `id` (String)
 - `name` (String)
 
 

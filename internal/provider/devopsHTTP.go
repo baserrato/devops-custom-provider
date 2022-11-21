@@ -78,3 +78,28 @@ func (c *Client) CreateDevOps(devops DevOps_Api) (*DevOps_Api, error) {
 
 	return &newDevOp, nil
 }
+
+func (c *Client) UpdateDevOps(devops DevOps_Api) (*DevOps_Api, error) {
+	rb, err := json.Marshal(devops)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", fmt.Sprintf("%s/devops/%s", c.HostURL, devops.Id), strings.NewReader(string(rb)))
+	if err != nil {
+		return nil, err
+	}
+
+	body, err := c.doRequest(req)
+	if err != nil {
+		return nil, err
+	}
+
+	newDevOps := DevOps_Api{}
+	err = json.Unmarshal(body, &newDevOps)
+	if err != nil {
+		return nil, err
+	}
+
+	return &newDevOps, nil
+}

@@ -48,7 +48,7 @@ func (r *OpsResource) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diagnos
 				Type: types.StringType,
 			},
 			"engineers": {
-				Optional: true,
+				Required: true,
 				Attributes: tfsdk.ListNestedAttributes(map[string]tfsdk.Attribute{
 					"name": {
 						Type:     types.StringType,
@@ -56,7 +56,7 @@ func (r *OpsResource) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diagnos
 					},
 					"id": {
 						Type:     types.StringType,
-						Required: true,
+						Optional: true,
 					},
 					"email": {
 						Type:     types.StringType,
