@@ -23,10 +23,3 @@ type Engineer_Api struct {
 	Id    string `json:"id"`
 	Email string `json:"email"`
 }
-
-/*
-type Engineer_Api_NoId struct {
-	Name  string `json:"name"`
-	Email string `json:"email"`
-}
-*/

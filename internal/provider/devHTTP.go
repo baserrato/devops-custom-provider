@@ -9,7 +9,7 @@ import (
 
 func (c *Client) GetDev(dev_id string) (*Dev_Api, error) {
 	//req, err := http.NewRequest("GET", fmt.Sprintf("%s/engineers", c.HostURL), nil)
-	res, err := http.NewRequest("GET", fmt.Sprintf("%s/dev/%s", c.HostURL, dev_id), nil)
+	res, err := http.NewRequest("GET", fmt.Sprintf("%s/dev/id/%s", c.HostURL, dev_id), nil)
 	if err != nil {
 		return nil, err
 	}

@@ -27,11 +27,6 @@ type OpsDataSource struct {
 type OpsDataSourceModel struct {
 	Ops []opsModel `tfsdk:"ops"`
 }
-type opsModel struct {
-	Name      types.String     `tfsdk:"name"`
-	Id        types.String     `tfsdk:"id"`
-	Engineers []engineersModel `tfsdk:"engineers"`
-}
 
 func (d *OpsDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_ops_data"

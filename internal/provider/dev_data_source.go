@@ -76,7 +76,7 @@ func (d *DevDataSource) Configure(ctx context.Context, req datasource.ConfigureR
 }
 
 func (d *DevDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
-	var config devModel
+	/*var config devModel
 
 	// Read Terraform prior state data into the model
 	diags := req.Config.Get(ctx, &config)
@@ -86,12 +86,12 @@ func (d *DevDataSource) Read(ctx context.Context, req datasource.ReadRequest, re
 	}
 
 	dev, err := d.client.GetDev(config.Id.ValueString())
-	/*
+
 		resp.Diagnostics.AddError(
 			"Unexpected Data Source Configure Type",
 			fmt.Sprintf("Returned value from GetEngineers: %s.", engineers),
 		)
-	*/
+
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to Read Engineers",
@@ -117,5 +117,5 @@ func (d *DevDataSource) Read(ctx context.Context, req datasource.ReadRequest, re
 	if resp.Diagnostics.HasError() {
 		return
 	}
-
+	*/
 }

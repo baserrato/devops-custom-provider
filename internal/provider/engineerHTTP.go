@@ -99,7 +99,7 @@ func (c *Client) DeleteEngineer(Id string) error {
 }
 
 func (c *Client) GetEngineer(Id string) (*Engineer_Api, error) {
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/engineers/%s", c.HostURL, Id), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/engineers/id/%s", c.HostURL, Id), nil)
 	if err != nil {
 		return nil, err
 	}
