@@ -56,15 +56,15 @@ Required:
 
 Required:
 
-- `ops_engineers` (Attributes List) (see [below for nested schema](#nestedatt--devops--ops--ops_engineers))
+- `engineers` (Attributes List) (see [below for nested schema](#nestedatt--devops--ops--engineers))
 
 Read-Only:
 
 - `id` (String)
 - `name` (String)
 
-<a id="nestedatt--devops--ops--ops_engineers"></a>
-### Nested Schema for `devops.ops.ops_engineers`
+<a id="nestedatt--devops--ops--engineers"></a>
+### Nested Schema for `devops.ops.engineers`
 
 Required:
 

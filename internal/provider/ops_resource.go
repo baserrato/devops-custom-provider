@@ -22,6 +22,11 @@ func NewOpsResource() resource.Resource {
 type OpsResource struct {
 	client *Client
 }
+type opsModel struct {
+	Name      types.String     `tfsdk:"name"`
+	Id        types.String     `tfsdk:"id"`
+	Engineers []engineersModel `tfsdk:"engineers"`
+}
 
 // ExampleResourceModel describes the resource data model.
 

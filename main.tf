@@ -22,20 +22,18 @@ resource "devops-bootcamp_engineer" "bob" {
 
 resource "devops-bootcamp_engineer" "bobb" {
   name  = "Bobb"
-  email = "Bobb@gmail.com"
+  email = "B@gmail.com"
 }
 
 resource "devops-bootcamp_dev" "bengal" {
-  name = "bengal"
-  engineers = [
-  { id = devops-bootcamp_engineer.bob.id }]
+  name      = "bengal"
+  engineers = []
 }
 
-resource "devops-bootcamp_devops" "topdawg" {
-  ops = []
+resource "devops-bootcamp_devops" "devops" {
   dev = [{ id = devops-bootcamp_dev.bengal.id }]
+  ops = []
 }
-
 
 
 

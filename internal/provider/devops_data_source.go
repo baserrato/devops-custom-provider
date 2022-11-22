@@ -78,7 +78,7 @@ func (d *DevOpsDataSource) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Di
 								Type:     types.StringType,
 								Computed: true,
 							},
-							"ops_engineers": {
+							"engineers": {
 								Required: true,
 								Attributes: tfsdk.ListNestedAttributes(map[string]tfsdk.Attribute{
 									"name": {

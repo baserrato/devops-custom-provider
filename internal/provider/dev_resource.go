@@ -3,6 +3,7 @@ package provider
 import (
 	"context"
 
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -25,9 +26,13 @@ type DevResource struct {
 
 // ExampleResourceModel describes the resource data model.
 type devModel struct {
-	Name      types.String     `tfsdk:"name"`
-	Id        types.String     `tfsdk:"id"`
-	Engineers []engineersModel `tfsdk:"engineers"`
+	Name      types.String `tfsdk:"name"`
+	Id        types.String `tfsdk:"id"`
+	Engineers types.List   `tfsdk:"engineers"`
+}
+
+type engineerIDModel struct {
+	Id types.String `tfsdk:"id"`
 }
 
 func (r *DevResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -92,17 +97,20 @@ func (r *DevResource) Create(ctx context.Context, req resource.CreateRequest, re
 		return
 	}
 
+	engin := []engineersModel{}
+	diags = plan.Engineers.ElementsAs(ctx, &engin, false)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 	var item Dev_Api
 	item.Name = string(plan.Name.ValueString())
-	for _, eng := range plan.Engineers {
+	for _, eng := range engin {
 		item.Engineers = append(item.Engineers, Engineer_Api{
-			Name:  eng.Name.ValueString(),
-			Id:    eng.Id.ValueString(),
-			Email: eng.Email.ValueString(),
+			Id: eng.Id.ValueString(),
 		})
 	}
 	newDev, err := r.client.CreateDev(item)
-
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error creating dev",
@@ -110,21 +118,32 @@ func (r *DevResource) Create(ctx context.Context, req resource.CreateRequest, re
 		)
 		return
 	}
-	plan.Engineers = []engineersModel{}
+
+	//plan.Engineers = //[]engineersModel{}
+	intermediate := []engineersModel{}
 	plan.Name = types.StringValue(newDev.Name)
 	plan.Id = types.StringValue(newDev.Id)
+
 	for _, eng := range newDev.Engineers {
-		plan.Engineers = append(plan.Engineers, engineersModel{
+		intermediate = append(intermediate, engineersModel{
 			Name:  types.StringValue(string(eng.Name)),
 			Id:    types.StringValue(string(eng.Id)),
 			Email: types.StringValue(string(eng.Email)),
 		})
 	}
+
+	_ = tfsdk.ValueFrom(ctx, intermediate, types.ListType{ElemType: types.ObjectType{AttrTypes: map[string]attr.Type{
+		"email": types.StringType,
+		"id":    types.StringType,
+		"name":  types.StringType,
+	}}}, &plan.Engineers)
+
 	diags = resp.State.Set(ctx, plan)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
+
 }
 
 func (r *DevResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
@@ -138,28 +157,26 @@ func (r *DevResource) Read(ctx context.Context, req resource.ReadRequest, resp *
 	}
 	dev, err := r.client.GetDev(state.Id.ValueString())
 	if err != nil {
-		resp.Diagnostics.AddError(
-			"Error Reading Dev",
-			"Could not read Dev with that Id "+state.Id.ValueString()+": "+err.Error(),
-		)
+		resp.State.RemoveResource(ctx)
 		return
 	}
+	intermediate := []engineersModel{}
 	state.Name = types.StringValue(dev.Name)
 	state.Id = types.StringValue(dev.Id)
-	state.Engineers = []engineersModel{}
+
 	for _, eng := range dev.Engineers {
-		state.Engineers = append(state.Engineers, engineersModel{
+		intermediate = append(intermediate, engineersModel{
 			Name:  types.StringValue(string(eng.Name)),
 			Id:    types.StringValue(string(eng.Id)),
 			Email: types.StringValue(string(eng.Email)),
 		})
 	}
 
-	diags = resp.State.Set(ctx, state)
-	resp.Diagnostics.Append(diags...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
+	_ = tfsdk.ValueFrom(ctx, intermediate, types.ListType{ElemType: types.ObjectType{AttrTypes: map[string]attr.Type{
+		"email": types.StringType,
+		"id":    types.StringType,
+		"name":  types.StringType,
+	}}}, &state.Engineers)
 }
 
 func (r *DevResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
@@ -170,34 +187,49 @@ func (r *DevResource) Update(ctx context.Context, req resource.UpdateRequest, re
 		return
 	}
 
+	engin := []engineersModel{}
+	diags = plan.Engineers.ElementsAs(ctx, &engin, false)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 	var item Dev_Api
+	item.Engineers = []Engineer_Api{}
 	item.Name = string(plan.Name.ValueString())
 	item.Id = string(plan.Id.ValueString())
-	for _, eng := range plan.Engineers {
+	for _, eng := range engin {
 		item.Engineers = append(item.Engineers, Engineer_Api{
-			Name:  eng.Name.ValueString(),
-			Id:    eng.Id.ValueString(),
-			Email: eng.Email.ValueString(),
+			Id: eng.Id.ValueString(),
 		})
 	}
 	newDev, err := r.client.UpdateDev(item)
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Error updating dev",
-			"Could not updating dev, unexpected error: "+err.Error(),
+			"Error Updating dev",
+			"Could not update dev, unexpected error: "+err.Error(),
 		)
 		return
 	}
-	plan.Engineers = []engineersModel{}
+
+	plan.Engineers = types.List{}
+	intermediate := []engineersModel{}
 	plan.Name = types.StringValue(newDev.Name)
 	plan.Id = types.StringValue(newDev.Id)
+
 	for _, eng := range newDev.Engineers {
-		plan.Engineers = append(plan.Engineers, engineersModel{
+		intermediate = append(intermediate, engineersModel{
 			Name:  types.StringValue(string(eng.Name)),
 			Id:    types.StringValue(string(eng.Id)),
 			Email: types.StringValue(string(eng.Email)),
 		})
 	}
+
+	_ = tfsdk.ValueFrom(ctx, intermediate, types.ListType{ElemType: types.ObjectType{AttrTypes: map[string]attr.Type{
+		"email": types.StringType,
+		"id":    types.StringType,
+		"name":  types.StringType,
+	}}}, &plan.Engineers)
+
 	diags = resp.State.Set(ctx, plan)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {

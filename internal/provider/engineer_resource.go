@@ -30,10 +30,6 @@ type engineersModel struct {
 	Email types.String `tfsdk:"email"`
 }
 
-type EngineerModel struct {
-	Engineers []engineersModel `tfsdk:"engineers"`
-}
-
 func (r *EngineerResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_engineer"
 }
@@ -120,10 +116,7 @@ func (r *EngineerResource) Read(ctx context.Context, req resource.ReadRequest, r
 
 	engineer, err := r.client.GetEngineer(state.Id.ValueString())
 	if err != nil {
-		resp.Diagnostics.AddError(
-			"Error Reading Engineer",
-			"Could not read Engineer with that Id "+state.Id.ValueString()+": "+err.Error(),
-		)
+		resp.State.RemoveResource(ctx)
 		return
 	}
 	state.Name = types.StringValue(engineer.Name)
@@ -152,8 +145,8 @@ func (r *EngineerResource) Update(ctx context.Context, req resource.UpdateReques
 	engineer, err := r.client.UpdateEngineer(item)
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Error creating engineer",
-			"Could not create engineer, unexpected error: "+err.Error(),
+			"Error updating engineer",
+			"Could not update engineer, unexpected error: "+err.Error(),
 		)
 		return
 	}
