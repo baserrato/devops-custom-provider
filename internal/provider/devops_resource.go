@@ -225,12 +225,8 @@ func (r *DevOpsResource) Read(ctx context.Context, req resource.ReadRequest, res
 	}
 
 	newDevOps, err := r.client.GetDevOp(state.Id.ValueString())
-
 	if err != nil {
-		resp.Diagnostics.AddError(
-			"Error creating dev",
-			"Could not create dev, unexpected error: "+err.Error(),
-		)
+		resp.State.RemoveResource(ctx)
 		return
 	}
 
