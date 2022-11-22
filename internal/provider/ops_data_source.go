@@ -2,6 +2,7 @@ package provider
 
 import (
 	"context"
+	"encoding/json"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
@@ -27,9 +28,9 @@ type OpsDataSourceModel struct {
 	Ops []opsModel `tfsdk:"ops"`
 }
 type opsModel struct {
-	Name      types.String `tfsdk:"name"`
-	Id        types.String `tfsdk:"id"`
-	Engineers types.Map    `tfsdk:"engineer_map"`
+	Name      types.String     `tfsdk:"name"`
+	Id        types.String     `tfsdk:"id"`
+	Engineers []engineersModel `tfsdk:"engineers"`
 }
 
 func (d *OpsDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
@@ -41,7 +42,7 @@ func (d *OpsDataSource) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diagn
 		Attributes: map[string]tfsdk.Attribute{
 			"ops": {
 				Computed: true,
-				Attributes: tfsdk.ListNestedAttributes(map[string]tfsdk.Attribute{
+				Attributes: tfsdk.SetNestedAttributes(map[string]tfsdk.Attribute{
 					"name": {
 						Type:     types.StringType,
 						Computed: true,
@@ -50,11 +51,22 @@ func (d *OpsDataSource) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diagn
 						Type:     types.StringType,
 						Computed: true,
 					},
-					"engineer_map": {
-						Type: types.MapType{
-							ElemType: types.StringType,
-						},
-						Computed: true,
+					"engineers": {
+						Required: true,
+						Attributes: tfsdk.SetNestedAttributes(map[string]tfsdk.Attribute{
+							"name": {
+								Type:     types.StringType,
+								Required: true,
+							},
+							"id": {
+								Type:     types.StringType,
+								Required: true,
+							},
+							"email": {
+								Type:     types.StringType,
+								Required: true,
+							},
+						}),
 					},
 				}),
 			},
@@ -73,45 +85,49 @@ func (d *OpsDataSource) Configure(ctx context.Context, req datasource.ConfigureR
 	d.client = client
 }
 
-func (d *OpsDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
-	var state OpsDataSourceModel
-
-	ops, err := d.client.GetOps()
-	if ops == nil {
-		return
-	}
-	/*
-		resp.Diagnostics.AddError(
-			"Unexpected Data Source Configure Type",
-			fmt.Sprintf("Returned value from GetEngineers: %s.", engineers),
-		)
-	*/
+func PrettyStruct(data interface{}) (string, error) {
+	val, err := json.MarshalIndent(data, "", "    ")
 	if err != nil {
-		resp.Diagnostics.AddError(
-			"Unable to Read Engineers",
-			err.Error(),
-		)
-		return
+		return "", err
 	}
+	return string(val), nil
+}
 
-	// Map response body to model
+func (d *OpsDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
+	/*
+		var state OpsDataSourceModel
 
-	for _, op := range ops {
-		maps, _ := types.MapValueFrom(ctx, types.StringType, op.Engineers)
-		opsState := opsModel{
-			Name:      types.StringValue(op.Name),
-			Id:        types.StringValue(op.Id),
-			Engineers: maps,
+		ops, err := d.client.GetOps()
+		if err != nil {
+			resp.Diagnostics.AddError(
+				"Unable to Read Engineers",
+				err.Error(),
+			)
+			return
 		}
 
-		state.Ops = append(state.Ops, opsState)
-	}
+		// Map response body to model
+		for _, op := range ops {
+			opsState := opsModel{
+				Name: types.StringValue(op.Name),
+				Id:   types.StringValue(op.Id),
+			}
+			for _, eng := range op.Engineers {
+				opsState.Engineers = append(opsState.Engineers, engineersModel{
+					Name:  types.StringValue(string(eng.Name)),
+					Id:    types.StringValue(string(eng.Id)),
+					Email: types.StringValue(string(eng.Email)),
+				})
+			}
 
-	// Set state
-	diags := resp.State.Set(ctx, &state)
-	resp.Diagnostics.Append(diags...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
+			state.Ops = append(state.Ops, opsState)
+		}
 
+		// Set state
+		diags := resp.State.Set(ctx, &state)
+		resp.Diagnostics.Append(diags...)
+		if resp.Diagnostics.HasError() {
+			return
+		}
+	*/
 }

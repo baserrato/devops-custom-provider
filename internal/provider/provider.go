@@ -75,6 +75,9 @@ func (p *ScaffoldingProvider) Configure(ctx context.Context, req provider.Config
 func (p *ScaffoldingProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
 		NewEngineerResource,
+		NewDevResource,
+		NewOpsResource,
+		NewDevOpsResource,
 	}
 }
 
@@ -83,6 +86,7 @@ func (p *ScaffoldingProvider) DataSources(ctx context.Context) []func() datasour
 		NewEngineerDataSource,
 		NewDevDataSource,
 		NewOpsDataSource,
+		NewDevOpsDataSource,
 	}
 }
 

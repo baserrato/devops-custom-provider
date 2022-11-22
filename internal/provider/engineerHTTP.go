@@ -50,7 +50,64 @@ func (c *Client) CreateEngineer(engineer Engineer_Api) (*Engineer_Api, error) {
 	if err != nil {
 		return nil, err
 	}
+	newEngineer := Engineer_Api{}
+	err = json.Unmarshal(body, &newEngineer)
+	if err != nil {
+		return nil, err
+	}
 
+	return &newEngineer, nil
+}
+
+func (c *Client) UpdateEngineer(engineer Engineer_Api) (*Engineer_Api, error) {
+	rb, err := json.Marshal(engineer)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", fmt.Sprintf("%s/engineers/%s", c.HostURL, engineer.Id), strings.NewReader(string(rb)))
+	if err != nil {
+		return nil, err
+	}
+
+	body, err := c.doRequest(req)
+	if err != nil {
+		return nil, err
+	}
+
+	newEngineer := Engineer_Api{}
+	err = json.Unmarshal(body, &newEngineer)
+	if err != nil {
+		return nil, err
+	}
+
+	return &newEngineer, nil
+}
+
+func (c *Client) DeleteEngineer(Id string) error {
+	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/engineers/%s", c.HostURL, Id), nil)
+	if err != nil {
+		return err
+	}
+
+	_, err = c.doRequest(req)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (c *Client) GetEngineer(Id string) (*Engineer_Api, error) {
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/engineers/%s", c.HostURL, Id), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	body, err := c.doRequest(req)
+	if err != nil {
+		return nil, err
+	}
 	newEngineer := Engineer_Api{}
 	err = json.Unmarshal(body, &newEngineer)
 	if err != nil {

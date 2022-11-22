@@ -23,14 +23,8 @@ type EngineerDataSource struct {
 }
 
 // EngineerDataSourceModel describes the data source data model.
-type EngineerDataSourceModel struct {
+type EngineersModel struct {
 	Engineers []engineersModel `tfsdk:"engineers"`
-}
-
-type engineersModel struct {
-	Name  types.String `tfsdk:"name"`
-	Id    types.String `tfsdk:"id"`
-	Email types.String `tfsdk:"email"`
 }
 
 func (d *EngineerDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
@@ -39,23 +33,23 @@ func (d *EngineerDataSource) Metadata(ctx context.Context, req datasource.Metada
 
 func (d *EngineerDataSource) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diagnostics) {
 	return tfsdk.Schema{
+		// This description is used by the documentation generator and the language server.
+		MarkdownDescription: "Engineer stuff",
 		Attributes: map[string]tfsdk.Attribute{
-			"engineers": {
-				Computed: true,
-				Attributes: tfsdk.ListNestedAttributes(map[string]tfsdk.Attribute{
-					"name": {
-						Type:     types.StringType,
-						Computed: true,
-					},
-					"id": {
-						Type:     types.StringType,
-						Required: true,
-					},
-					"email": {
-						Type:     types.StringType,
-						Required: true,
-					},
-				}),
+			"name": {
+				Required:            true,
+				MarkdownDescription: "name for an Engineer",
+				Type:                types.StringType,
+			},
+			"id": {
+				Computed:            true,
+				MarkdownDescription: "identifier for an Engineer",
+				Type:                types.StringType,
+			},
+			"email": {
+				Required:            true,
+				MarkdownDescription: "email for an Engineer",
+				Type:                types.StringType,
 			},
 		},
 	}, nil
@@ -73,36 +67,28 @@ func (d *EngineerDataSource) Configure(ctx context.Context, req datasource.Confi
 }
 
 func (d *EngineerDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
-	var state EngineerDataSourceModel
+	var config engineersModel
 
-	engineers, err := d.client.GetEngineers()
-	/*
-		resp.Diagnostics.AddError(
-			"Unexpected Data Source Configure Type",
-			fmt.Sprintf("Returned value from GetEngineers: %s.", engineers),
-		)
-	*/
-	if err != nil {
-		resp.Diagnostics.AddError(
-			"Unable to Read Engineers",
-			err.Error(),
-		)
+	// Read Terraform prior state data into the model
+	diags := req.Config.Get(ctx, &config)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	// Map response body to model
-	for _, engineer := range engineers {
-		engineerState := engineersModel{
-			Name:  types.StringValue(engineer.Name),
-			Id:    types.StringValue(engineer.Id),
-			Email: types.StringValue(engineer.Email),
-		}
-
-		state.Engineers = append(state.Engineers, engineerState)
+	engineer, err := d.client.GetEngineer(config.Id.ValueString())
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Error Reading Engineer",
+			"Could not read Engineer with that Id"+config.Id.ValueString()+": "+err.Error(),
+		)
+		return
 	}
+	config.Name = types.StringValue(engineer.Name)
+	config.Id = types.StringValue(engineer.Id)
+	config.Email = types.StringValue(engineer.Email)
 
-	// Set state
-	diags := resp.State.Set(ctx, &state)
+	diags = resp.State.Set(ctx, config)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return

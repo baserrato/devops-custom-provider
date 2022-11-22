@@ -23,14 +23,6 @@ type DevDataSource struct {
 }
 
 // EngineerDataSourceModel describes the data source data model.
-type DevDataSourceModel struct {
-	Devs []devModel `tfsdk:"devs"`
-}
-type devModel struct {
-	Name      types.String `tfsdk:"name"`
-	Id        types.String `tfsdk:"id"`
-	Engineers types.Map    `tfsdk:"engineer_map"`
-}
 
 func (d *DevDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_dev_data"
@@ -38,22 +30,32 @@ func (d *DevDataSource) Metadata(ctx context.Context, req datasource.MetadataReq
 
 func (d *DevDataSource) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diagnostics) {
 	return tfsdk.Schema{
+		// This description is used by the documentation generator and the language server.
+		MarkdownDescription: "Dev stuff",
 		Attributes: map[string]tfsdk.Attribute{
-			"devs": {
-				Computed: true,
-				Attributes: tfsdk.ListNestedAttributes(map[string]tfsdk.Attribute{
+			"name": {
+				Required:            true,
+				MarkdownDescription: "name for an Engineer",
+				Type:                types.StringType,
+			},
+			"id": {
+				Computed:            true,
+				MarkdownDescription: "identifier for an Engineer",
+				Type:                types.StringType,
+			},
+			"engineers": {
+				Optional: true,
+				Attributes: tfsdk.SetNestedAttributes(map[string]tfsdk.Attribute{
 					"name": {
 						Type:     types.StringType,
 						Computed: true,
 					},
 					"id": {
 						Type:     types.StringType,
-						Computed: true,
+						Required: true,
 					},
-					"engineer_map": {
-						Type: types.MapType{
-							ElemType: types.StringType,
-						},
+					"email": {
+						Type:     types.StringType,
 						Computed: true,
 					},
 				}),
@@ -74,12 +76,16 @@ func (d *DevDataSource) Configure(ctx context.Context, req datasource.ConfigureR
 }
 
 func (d *DevDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
-	var state DevDataSourceModel
+	var config devModel
 
-	devs, err := d.client.GetDevs()
-	if devs == nil {
+	// Read Terraform prior state data into the model
+	diags := req.Config.Get(ctx, &config)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
 		return
 	}
+
+	dev, err := d.client.GetDev(config.Id.ValueString())
 	/*
 		resp.Diagnostics.AddError(
 			"Unexpected Data Source Configure Type",
@@ -95,20 +101,18 @@ func (d *DevDataSource) Read(ctx context.Context, req datasource.ReadRequest, re
 	}
 
 	// Map response body to model
-
-	for _, dev := range devs {
-		maps, _ := types.MapValueFrom(ctx, types.StringType, dev.Engineers)
-		devState := devModel{
-			Name:      types.StringValue(dev.Name),
-			Id:        types.StringValue(dev.Id),
-			Engineers: maps,
-		}
-
-		state.Devs = append(state.Devs, devState)
+	config.Name = types.StringValue(dev.Name)
+	config.Id = types.StringValue(dev.Id)
+	for _, eng := range dev.Engineers {
+		config.Engineers = append(config.Engineers, engineersModel{
+			Name:  types.StringValue(string(eng.Name)),
+			Id:    types.StringValue(string(eng.Id)),
+			Email: types.StringValue(string(eng.Email)),
+		})
 	}
 
 	// Set state
-	diags := resp.State.Set(ctx, &state)
+	diags = resp.State.Set(ctx, &config)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
