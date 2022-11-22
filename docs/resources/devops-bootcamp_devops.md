@@ -56,7 +56,7 @@ Optional:
 
 Read-Only:
 
-- `engineers` (Attributes) (see [below for nested schema](#nestedatt--ops--engineers))
+- `engineers` (Attributes List) (see [below for nested schema](#nestedatt--ops--engineers))
 - `name` (String)
 
 <a id="nestedatt--ops--engineers"></a>
