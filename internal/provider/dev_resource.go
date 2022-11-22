@@ -31,10 +31,6 @@ type devModel struct {
 	Engineers types.List   `tfsdk:"engineers"`
 }
 
-type engineerIDModel struct {
-	Id types.String `tfsdk:"id"`
-}
-
 func (r *DevResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_dev"
 }
@@ -59,6 +55,9 @@ func (r *DevResource) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diagnos
 			},
 			"engineers": {
 				Required: true,
+				PlanModifiers: tfsdk.AttributePlanModifiers{
+					resource.UseStateForUnknown(),
+				},
 				Attributes: tfsdk.ListNestedAttributes(map[string]tfsdk.Attribute{
 					"name": {
 						Type:     types.StringType,
@@ -248,8 +247,8 @@ func (r *DevResource) Delete(ctx context.Context, req resource.DeleteRequest, re
 	err := r.client.DeleteDev(state.Id.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Error Deleting HashiCups Order",
-			"Could not delete order, unexpected error: "+err.Error(),
+			"Error Deleting Dev",
+			"Could not delete dev, unexpected error: "+err.Error(),
 		)
 		return
 	}

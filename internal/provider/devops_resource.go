@@ -61,6 +61,9 @@ func (r *DevOpsResource) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diag
 					},
 					"engineers": {
 						Computed: true,
+						PlanModifiers: tfsdk.AttributePlanModifiers{
+							resource.UseStateForUnknown(),
+						},
 						Attributes: tfsdk.ListNestedAttributes(map[string]tfsdk.Attribute{
 							"name": {
 								Type:     types.StringType,
@@ -91,7 +94,10 @@ func (r *DevOpsResource) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diag
 					},
 					"engineers": {
 						Computed: true,
-						Attributes: tfsdk.SingleNestedAttributes(map[string]tfsdk.Attribute{
+						PlanModifiers: tfsdk.AttributePlanModifiers{
+							resource.UseStateForUnknown(),
+						},
+						Attributes: tfsdk.ListNestedAttributes(map[string]tfsdk.Attribute{
 							"name": {
 								Type:     types.StringType,
 								Computed: true,
@@ -158,7 +164,6 @@ func (r *DevOpsResource) Create(ctx context.Context, req resource.CreateRequest,
 	plan.Dev = []devModel{}
 	plan.Ops = []opsModel{}
 	plan.Id = types.StringValue(newDevOps.Id)
-
 	for _, op := range newDevOps.Ops {
 		var newEngineers []engineersModel
 		for _, eng := range op.Engineers {
@@ -168,11 +173,17 @@ func (r *DevOpsResource) Create(ctx context.Context, req resource.CreateRequest,
 				Email: types.StringValue(string(eng.Email)),
 			})
 		}
-		plan.Ops = append(plan.Ops, opsModel{
-			Name:      types.StringValue(string(op.Name)),
-			Id:        types.StringValue(string(op.Id)),
-			Engineers: newEngineers,
-		})
+		newOp := opsModel{
+			Name: types.StringValue(string(op.Name)),
+			Id:   types.StringValue(string(op.Id)),
+		}
+		_ = tfsdk.ValueFrom(ctx, newEngineers, types.ListType{ElemType: types.ObjectType{AttrTypes: map[string]attr.Type{
+			"email": types.StringType,
+			"id":    types.StringType,
+			"name":  types.StringType,
+		}}}, &newOp.Engineers)
+
+		plan.Ops = append(plan.Ops, newOp)
 	}
 
 	for _, dev := range newDevOps.Devs {
@@ -199,7 +210,6 @@ func (r *DevOpsResource) Create(ctx context.Context, req resource.CreateRequest,
 
 	diags = resp.State.Set(ctx, plan)
 	resp.Diagnostics.Append(diags...)
-
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -207,7 +217,7 @@ func (r *DevOpsResource) Create(ctx context.Context, req resource.CreateRequest,
 }
 
 func (r *DevOpsResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
-	/*var state devOpsModel
+	var state devOpsModel
 	diags := req.State.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
@@ -226,7 +236,7 @@ func (r *DevOpsResource) Read(ctx context.Context, req resource.ReadRequest, res
 
 	state.Dev = []devModel{}
 	state.Ops = []opsModel{}
-	state.Id = types.StringValue(newDevOps.Id)
+
 	for _, op := range newDevOps.Ops {
 		var newEngineers []engineersModel
 		for _, eng := range op.Engineers {
@@ -236,12 +246,19 @@ func (r *DevOpsResource) Read(ctx context.Context, req resource.ReadRequest, res
 				Email: types.StringValue(string(eng.Email)),
 			})
 		}
-		state.Ops = append(state.Ops, opsModel{
-			Name:      types.StringValue(string(op.Name)),
-			Id:        types.StringValue(string(op.Id)),
-			Engineers: newEngineers,
-		})
+		newOp := opsModel{
+			Name: types.StringValue(string(op.Name)),
+			Id:   types.StringValue(string(op.Id)),
+		}
+		_ = tfsdk.ValueFrom(ctx, newEngineers, types.ListType{ElemType: types.ObjectType{AttrTypes: map[string]attr.Type{
+			"email": types.StringType,
+			"id":    types.StringType,
+			"name":  types.StringType,
+		}}}, &newOp.Engineers)
+
+		state.Ops = append(state.Ops, newOp)
 	}
+
 	for _, dev := range newDevOps.Devs {
 		var newEngineers []engineersModel
 		for _, eng := range dev.Engineers {
@@ -251,32 +268,124 @@ func (r *DevOpsResource) Read(ctx context.Context, req resource.ReadRequest, res
 				Email: types.StringValue(string(eng.Email)),
 			})
 		}
-		state.Dev = append(state.Dev, devModel{
-			Name:      types.StringValue(string(dev.Name)),
-			Id:        types.StringValue(string(dev.Id)),
-			Engineers: newEngineers,
-		})
+		newDev := devModel{
+			Name: types.StringValue(string(dev.Name)),
+			Id:   types.StringValue(string(dev.Id)),
+		}
+		_ = tfsdk.ValueFrom(ctx, newEngineers, types.ListType{ElemType: types.ObjectType{AttrTypes: map[string]attr.Type{
+			"email": types.StringType,
+			"id":    types.StringType,
+			"name":  types.StringType,
+		}}}, &newDev.Engineers)
+
+		state.Dev = append(state.Dev, newDev)
 	}
+
 	diags = resp.State.Set(ctx, state)
 	resp.Diagnostics.Append(diags...)
+
 	if resp.Diagnostics.HasError() {
 		return
-	}*/
+	}
 }
 
 func (r *DevOpsResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+	var plan devOpsModel
+	diags := req.Plan.Get(ctx, &plan)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	var item DevOps_Api
+	item.Id = string(plan.Id.ValueString())
+	for _, op := range plan.Ops {
+		item.Ops = append(item.Ops, Ops_Api{
+			Id: op.Id.ValueString(),
+		})
+	}
+
+	for _, dev := range plan.Dev {
+		item.Devs = append(item.Devs, Dev_Api{
+			Id: dev.Id.ValueString(),
+		})
+	}
+
+	newDevOps, err := r.client.UpdateDevOps(item)
+
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Error updating devops",
+			"Could not updating devops, unexpected error: "+err.Error(),
+		)
+		return
+	}
+
+	plan.Dev = []devModel{}
+	plan.Ops = []opsModel{}
+	plan.Id = types.StringValue(newDevOps.Id)
+
+	for _, op := range newDevOps.Ops {
+		var newEngineers []engineersModel
+		for _, eng := range op.Engineers {
+			newEngineers = append(newEngineers, engineersModel{
+				Name:  types.StringValue(string(eng.Name)),
+				Id:    types.StringValue(string(eng.Id)),
+				Email: types.StringValue(string(eng.Email)),
+			})
+		}
+		newOp := opsModel{
+			Name: types.StringValue(string(op.Name)),
+			Id:   types.StringValue(string(op.Id)),
+		}
+		_ = tfsdk.ValueFrom(ctx, newEngineers, types.ListType{ElemType: types.ObjectType{AttrTypes: map[string]attr.Type{
+			"email": types.StringType,
+			"id":    types.StringType,
+			"name":  types.StringType,
+		}}}, &newOp.Engineers)
+
+		plan.Ops = append(plan.Ops, newOp)
+	}
+
+	for _, dev := range newDevOps.Devs {
+		var newEngineers []engineersModel
+		for _, eng := range dev.Engineers {
+			newEngineers = append(newEngineers, engineersModel{
+				Name:  types.StringValue(string(eng.Name)),
+				Id:    types.StringValue(string(eng.Id)),
+				Email: types.StringValue(string(eng.Email)),
+			})
+		}
+		newDev := devModel{
+			Name: types.StringValue(string(dev.Name)),
+			Id:   types.StringValue(string(dev.Id)),
+		}
+		_ = tfsdk.ValueFrom(ctx, newEngineers, types.ListType{ElemType: types.ObjectType{AttrTypes: map[string]attr.Type{
+			"email": types.StringType,
+			"id":    types.StringType,
+			"name":  types.StringType,
+		}}}, &newDev.Engineers)
+
+		plan.Dev = append(plan.Dev, newDev)
+	}
+
+	diags = resp.State.Set(ctx, plan)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
 }
 
 func (r *DevOpsResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var state devModel
+	var state devOpsModel
 	diags := req.State.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	err := r.client.DeleteDev(state.Id.ValueString())
+	err := r.client.DeleteDevOps(state.Id.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error Deleting HashiCups Order",

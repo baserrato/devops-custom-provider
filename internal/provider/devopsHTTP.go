@@ -103,3 +103,17 @@ func (c *Client) UpdateDevOps(devops DevOps_Api) (*DevOps_Api, error) {
 
 	return &newDevOps, nil
 }
+
+func (c *Client) DeleteDevOps(Id string) error {
+	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/devops/%s", c.HostURL, Id), nil)
+	if err != nil {
+		return err
+	}
+
+	_, err = c.doRequest(req)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
