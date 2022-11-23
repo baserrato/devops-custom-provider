@@ -17,3 +17,15 @@ internal to the provider. This schema should loosely mirror the API data structu
 
 ### File Hierarchy
 ![boiler plate file tree](file_tree.png)
+### Look inside the internal directory
+``` Go
+    type ExampleDataSourceModel struct {
+        ConfigurableAttribute types.String `tfsdk:"configurable_attribute"`
+        Id                    types.String `tfsdk:"id"`
+    }
+```
+- this code can be found [example_data_source.go](https://github.com/hashicorp/terraform-provider-scaffolding-framework/blob/95358ccbb8c897150c9cbe973c237448bdefcd4f/internal/provider/example_data_source.go)
+- this is how data should be modled and stored in the provider
+#### [example_resource.go](https://github.com/hashicorp/terraform-provider-scaffolding-framework/blob/95358ccbb8c897150c9cbe973c237448bdefcd4f/internal/provider/example_resource.go)
+- This files shows use of crud operations
+- As well as metadata and GetSchema which are important for documentation purposes
