@@ -25,7 +25,7 @@ internal to the provider. This schema should loosely mirror the API data structu
     }
 ```
 - this code can be found [example_data_source.go](https://github.com/hashicorp/terraform-provider-scaffolding-framework/blob/95358ccbb8c897150c9cbe973c237448bdefcd4f/internal/provider/example_data_source.go)
-- this is how data should be modled and stored in the provider
+- this is how data should be model and stored in the provider
 #### [example_resource.go](https://github.com/hashicorp/terraform-provider-scaffolding-framework/blob/95358ccbb8c897150c9cbe973c237448bdefcd4f/internal/provider/example_resource.go)
 - This files shows use of crud operations
 - As well as metadata and GetSchema which are important for documentation and building resources
