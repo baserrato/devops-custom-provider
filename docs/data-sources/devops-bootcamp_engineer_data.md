@@ -17,11 +17,11 @@ Engineer stuff
 
 ### Required
 
-- `email` (String) email for an Engineer
 - `name` (String) name for an Engineer
 
 ### Read-Only
 
+- `email` (String) email for an Engineer
 - `id` (String) identifier for an Engineer
 
 

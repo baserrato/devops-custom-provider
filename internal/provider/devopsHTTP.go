@@ -37,7 +37,7 @@ func (c *Client) GetDevOps() ([]devops_resource.DevOps, error) {
 }
 func (c *Client) GetDevOp(devop_id string) (*devops_resource.DevOps, error) {
 	//req, err := http.NewRequest("GET", fmt.Sprintf("%s/engineers", c.HostURL), nil)
-	res, err := http.NewRequest("GET", fmt.Sprintf("%s/devops/id/%s", c.HostURL, devop_id), nil)
+	res, err := http.NewRequest("GET", fmt.Sprintf("%s/devops/%s", c.HostURL, devop_id), nil)
 	if err != nil {
 		return nil, err
 	}
