@@ -116,3 +116,22 @@ func (c *Client) GetEngineer(Id string) (*Engineer_Api, error) {
 
 	return &newEngineer, nil
 }
+
+func (c *Client) GetEngineerWithName(Name string) (*Engineer_Api, error) {
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/engineers/name/%s", c.HostURL, Name), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	body, err := c.doRequest(req)
+	if err != nil {
+		return nil, err
+	}
+	newEngineer := Engineer_Api{}
+	err = json.Unmarshal(body, &newEngineer)
+	if err != nil {
+		return nil, err
+	}
+
+	return &newEngineer, nil
+}

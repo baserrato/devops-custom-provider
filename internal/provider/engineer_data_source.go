@@ -47,7 +47,7 @@ func (d *EngineerDataSource) GetSchema(ctx context.Context) (tfsdk.Schema, diag.
 				Type:                types.StringType,
 			},
 			"email": {
-				Required:            true,
+				Computed:            true,
 				MarkdownDescription: "email for an Engineer",
 				Type:                types.StringType,
 			},
@@ -76,11 +76,11 @@ func (d *EngineerDataSource) Read(ctx context.Context, req datasource.ReadReques
 		return
 	}
 
-	engineer, err := d.client.GetEngineer(config.Id.ValueString())
+	engineer, err := d.client.GetEngineerWithName(config.Name.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error Reading Engineer",
-			"Could not read Engineer with that Id"+config.Id.ValueString()+": "+err.Error(),
+			"Could not read Engineer with that Name"+config.Name.ValueString()+": "+err.Error(),
 		)
 		return
 	}
