@@ -6,9 +6,10 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
+	"github.com/baserrato/devops-resource"
 )
 
-func (c *Client) GetDevOps() ([]DevOps_Api, error) {
+func (c *Client) GetDevOps() ([]devops_resource.DevOps, error) {
 	//req, err := http.NewRequest("GET", fmt.Sprintf("%s/engineers", c.HostURL), nil)
 	res, err := http.Get("http://localhost:8080/devops")
 	if err != nil {
@@ -25,7 +26,7 @@ func (c *Client) GetDevOps() ([]DevOps_Api, error) {
 			return "", err
 		}
 	*/
-	devops := []DevOps_Api{}
+	devops := []devops_resource.DevOps{}
 	//var results map[string]interface{}
 	err = json.Unmarshal(body, &devops)
 	if err != nil {
@@ -34,7 +35,7 @@ func (c *Client) GetDevOps() ([]DevOps_Api, error) {
 
 	return devops, nil
 }
-func (c *Client) GetDevOp(devop_id string) (*DevOps_Api, error) {
+func (c *Client) GetDevOp(devop_id string) (*devops_resource.DevOps, error) {
 	//req, err := http.NewRequest("GET", fmt.Sprintf("%s/engineers", c.HostURL), nil)
 	res, err := http.NewRequest("GET", fmt.Sprintf("%s/devops/id/%s", c.HostURL, devop_id), nil)
 	if err != nil {
@@ -44,7 +45,7 @@ func (c *Client) GetDevOp(devop_id string) (*DevOps_Api, error) {
 	if err != nil {
 		return nil, err
 	}
-	devops := DevOps_Api{}
+	devops := devops_resource.DevOps{}
 	//var results map[string]interface{}
 	err = json.Unmarshal(body, &devops)
 	if err != nil {
@@ -54,7 +55,7 @@ func (c *Client) GetDevOp(devop_id string) (*DevOps_Api, error) {
 	return &devops, nil
 }
 
-func (c *Client) CreateDevOps(devops DevOps_Api) (*DevOps_Api, error) {
+func (c *Client) CreateDevOps(devops devops_resource.DevOps) (*devops_resource.DevOps, error) {
 	rb, err := json.Marshal(devops)
 	if err != nil {
 		return nil, err
@@ -70,7 +71,7 @@ func (c *Client) CreateDevOps(devops DevOps_Api) (*DevOps_Api, error) {
 		return nil, err
 	}
 
-	newDevOp := DevOps_Api{}
+	newDevOp := devops_resource.DevOps{}
 	err = json.Unmarshal(body, &newDevOp)
 	if err != nil {
 		return nil, err
@@ -79,7 +80,7 @@ func (c *Client) CreateDevOps(devops DevOps_Api) (*DevOps_Api, error) {
 	return &newDevOp, nil
 }
 
-func (c *Client) UpdateDevOps(devops DevOps_Api) (*DevOps_Api, error) {
+func (c *Client) UpdateDevOps(devops devops_resource.DevOps) (*devops_resource.DevOps, error) {
 	rb, err := json.Marshal(devops)
 	if err != nil {
 		return nil, err
@@ -95,7 +96,7 @@ func (c *Client) UpdateDevOps(devops DevOps_Api) (*DevOps_Api, error) {
 		return nil, err
 	}
 
-	newDevOps := DevOps_Api{}
+	newDevOps := devops_resource.DevOps{}
 	err = json.Unmarshal(body, &newDevOps)
 	if err != nil {
 		return nil, err

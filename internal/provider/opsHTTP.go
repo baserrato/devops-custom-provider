@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"github.com/baserrato/devops-resource"
 )
 
-func (c *Client) GetOp(op_id string) (*Ops_Api, error) {
+func (c *Client) GetOp(op_id string) (*devops_resource.Ops, error) {
 	//req, err := http.NewRequest("GET", fmt.Sprintf("%s/engineers", c.HostURL), nil)
 	res, err := http.NewRequest("GET", fmt.Sprintf("%s/op/id/%s", c.HostURL, op_id), nil)
 	if err != nil {
@@ -17,7 +18,7 @@ func (c *Client) GetOp(op_id string) (*Ops_Api, error) {
 	if err != nil {
 		return nil, err
 	}
-	op := Ops_Api{}
+	op := devops_resource.Ops{}
 	//var results map[string]interface{}
 	err = json.Unmarshal(body, &op)
 	if err != nil {
@@ -27,7 +28,7 @@ func (c *Client) GetOp(op_id string) (*Ops_Api, error) {
 	return &op, nil
 }
 
-func (c *Client) CreateOp(dev Ops_Api) (*Ops_Api, error) {
+func (c *Client) CreateOp(dev devops_resource.Ops) (*devops_resource.Ops, error) {
 	rb, err := json.Marshal(dev)
 	if err != nil {
 		return nil, err
@@ -43,7 +44,7 @@ func (c *Client) CreateOp(dev Ops_Api) (*Ops_Api, error) {
 		return nil, err
 	}
 
-	newOp := Ops_Api{}
+	newOp := devops_resource.Ops{}
 	err = json.Unmarshal(body, &newOp)
 	if err != nil {
 		return nil, err
@@ -51,7 +52,7 @@ func (c *Client) CreateOp(dev Ops_Api) (*Ops_Api, error) {
 
 	return &newOp, nil
 }
-func (c *Client) UpdateOp(op Ops_Api) (*Ops_Api, error) {
+func (c *Client) UpdateOp(op devops_resource.Ops) (*devops_resource.Ops, error) {
 	rb, err := json.Marshal(op)
 	if err != nil {
 		return nil, err
@@ -67,7 +68,7 @@ func (c *Client) UpdateOp(op Ops_Api) (*Ops_Api, error) {
 		return nil, err
 	}
 
-	newOp := Ops_Api{}
+	newOp := devops_resource.Ops{}
 	err = json.Unmarshal(body, &newOp)
 	if err != nil {
 		return nil, err

@@ -9,6 +9,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/baserrato/devops-resource"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces
@@ -102,10 +103,10 @@ func (r *DevResource) Create(ctx context.Context, req resource.CreateRequest, re
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	var item Dev_Api
+	var item devops_resource.Dev
 	item.Name = string(plan.Name.ValueString())
 	for _, eng := range engin {
-		item.Engineers = append(item.Engineers, Engineer_Api{
+		item.Engineers = append(item.Engineers, &devops_resource.Engineer{
 			Id: eng.Id.ValueString(),
 		})
 	}
@@ -192,12 +193,12 @@ func (r *DevResource) Update(ctx context.Context, req resource.UpdateRequest, re
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	var item Dev_Api
-	item.Engineers = []Engineer_Api{}
+	var item devops_resource.Dev
+	item.Engineers = []*devops_resource.Engineer{}
 	item.Name = string(plan.Name.ValueString())
 	item.Id = string(plan.Id.ValueString())
 	for _, eng := range engin {
-		item.Engineers = append(item.Engineers, Engineer_Api{
+		item.Engineers = append(item.Engineers, &devops_resource.Engineer{
 			Id: eng.Id.ValueString(),
 		})
 	}
