@@ -118,7 +118,7 @@ func (c *Client) GetEngineer(Id string) (*devops_resource.Engineer, error) {
 	return &newEngineer, nil
 }
 
-func (c *Client) GetEngineerWithName(Name string) (*Engineer_Api, error) {
+func (c *Client) GetEngineerWithName(Name string) (*devops_resource.Engineer, error) {
 	req, err := http.NewRequest("GET", fmt.Sprintf("%s/engineers/name/%s", c.HostURL, Name), nil)
 	if err != nil {
 		return nil, err
@@ -128,7 +128,7 @@ func (c *Client) GetEngineerWithName(Name string) (*Engineer_Api, error) {
 	if err != nil {
 		return nil, err
 	}
-	newEngineer := Engineer_Api{}
+	newEngineer := devops_resource.Engineer{}
 	err = json.Unmarshal(body, &newEngineer)
 	if err != nil {
 		return nil, err
