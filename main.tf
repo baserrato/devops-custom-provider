@@ -33,10 +33,24 @@ resource "devops-bootcamp_ops" "ferrets" {
   name      = "ferrets"
   engineers = [{ id = devops-bootcamp_engineer.bob.id }]
 }
+
 resource "devops-bootcamp_ops" "ferrets2" {
   name      = "ferrets2"
   engineers = [{ id = devops-bootcamp_engineer.bob.id }]
 }
+
+resource "devops-bootcamp_devops" "devops" {
+  ops = [{ id = devops-bootcamp_ops.ferrets.id }]
+  dev = []
+}
+
+data "devops-bootcamp_engineer_data" "bob" {
+  name = "Bob"
+}
+output "engineer_bob" {
+  value = data.devops-bootcamp_engineer_data.bob
+}
+
 
 
 
