@@ -5,12 +5,33 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
-	"github.com/liatrio/devops-bootcamp/examples/ch6/devops-resources"
+
+	devops_resource "github.com/liatrio/devops-bootcamp/examples/ch6/devops-resources"
 )
 
 func (c *Client) GetOp(op_id string) (*devops_resource.Ops, error) {
 	//req, err := http.NewRequest("GET", fmt.Sprintf("%s/engineers", c.HostURL), nil)
 	res, err := http.NewRequest("GET", fmt.Sprintf("%s/op/id/%s", c.HostURL, op_id), nil)
+	if err != nil {
+		return nil, err
+	}
+	body, err := c.doRequest(res)
+	if err != nil {
+		return nil, err
+	}
+	op := devops_resource.Ops{}
+	//var results map[string]interface{}
+	err = json.Unmarshal(body, &op)
+	if err != nil {
+		return nil, err
+	}
+
+	return &op, nil
+}
+
+func (c *Client) GetOpByName(op_name string) (*devops_resource.Ops, error) {
+	//req, err := http.NewRequest("GET", fmt.Sprintf("%s/engineers", c.HostURL), nil)
+	res, err := http.NewRequest("GET", fmt.Sprintf("%s/op/name/%s", c.HostURL, op_name), nil)
 	if err != nil {
 		return nil, err
 	}
