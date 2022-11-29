@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
-	"github.com/baserrato/devops-resource"
+	"github.com/liatrio/devops-bootcamp/examples/ch6/devops-resources"
 )
 
 func (c *Client) GetDev(dev_id string) (*devops_resource.Dev, error) {

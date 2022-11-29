@@ -9,7 +9,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/baserrato/devops-resource"
+	"github.com/liatrio/devops-bootcamp/examples/ch6/devops-resources"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces
