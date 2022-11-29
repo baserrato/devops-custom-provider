@@ -6,9 +6,10 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
+	"github.com/baserrato/devops-resource"
 )
 
-func (c *Client) GetEngineers() ([]Engineer_Api, error) {
+func (c *Client) GetEngineers() ([]devops_resource.Engineer, error) {
 	//req, err := http.NewRequest("GET", fmt.Sprintf("%s/engineers", c.HostURL), nil)
 	res, err := http.Get("http://localhost:8080/engineers")
 	if err != nil {
@@ -25,7 +26,7 @@ func (c *Client) GetEngineers() ([]Engineer_Api, error) {
 			return "", err
 		}
 	*/
-	engineers := []Engineer_Api{}
+	engineers := []devops_resource.Engineer{}
 	//var results map[string]interface{}
 	err = json.Unmarshal(body, &engineers)
 	if err != nil {
@@ -35,7 +36,7 @@ func (c *Client) GetEngineers() ([]Engineer_Api, error) {
 	return engineers, nil
 }
 
-func (c *Client) CreateEngineer(engineer Engineer_Api) (*Engineer_Api, error) {
+func (c *Client) CreateEngineer(engineer devops_resource.Engineer) (*devops_resource.Engineer, error) {
 	rb, err := json.Marshal(engineer)
 	if err != nil {
 		return nil, err
@@ -50,7 +51,7 @@ func (c *Client) CreateEngineer(engineer Engineer_Api) (*Engineer_Api, error) {
 	if err != nil {
 		return nil, err
 	}
-	newEngineer := Engineer_Api{}
+	newEngineer := devops_resource.Engineer{}
 	err = json.Unmarshal(body, &newEngineer)
 	if err != nil {
 		return nil, err
@@ -59,7 +60,7 @@ func (c *Client) CreateEngineer(engineer Engineer_Api) (*Engineer_Api, error) {
 	return &newEngineer, nil
 }
 
-func (c *Client) UpdateEngineer(engineer Engineer_Api) (*Engineer_Api, error) {
+func (c *Client) UpdateEngineer(engineer devops_resource.Engineer) (*devops_resource.Engineer, error) {
 	rb, err := json.Marshal(engineer)
 	if err != nil {
 		return nil, err
@@ -75,7 +76,7 @@ func (c *Client) UpdateEngineer(engineer Engineer_Api) (*Engineer_Api, error) {
 		return nil, err
 	}
 
-	newEngineer := Engineer_Api{}
+	newEngineer := devops_resource.Engineer{}
 	err = json.Unmarshal(body, &newEngineer)
 	if err != nil {
 		return nil, err
@@ -98,7 +99,7 @@ func (c *Client) DeleteEngineer(Id string) error {
 	return nil
 }
 
-func (c *Client) GetEngineer(Id string) (*Engineer_Api, error) {
+func (c *Client) GetEngineer(Id string) (*devops_resource.Engineer, error) {
 	req, err := http.NewRequest("GET", fmt.Sprintf("%s/engineers/id/%s", c.HostURL, Id), nil)
 	if err != nil {
 		return nil, err
@@ -108,7 +109,7 @@ func (c *Client) GetEngineer(Id string) (*Engineer_Api, error) {
 	if err != nil {
 		return nil, err
 	}
-	newEngineer := Engineer_Api{}
+	newEngineer := devops_resource.Engineer{}
 	err = json.Unmarshal(body, &newEngineer)
 	if err != nil {
 		return nil, err
@@ -117,7 +118,7 @@ func (c *Client) GetEngineer(Id string) (*Engineer_Api, error) {
 	return &newEngineer, nil
 }
 
-func (c *Client) GetEngineerWithName(Name string) (*Engineer_Api, error) {
+func (c *Client) GetEngineerWithName(Name string) (*devops_resource.Engineer, error) {
 	req, err := http.NewRequest("GET", fmt.Sprintf("%s/engineers/name/%s", c.HostURL, Name), nil)
 	if err != nil {
 		return nil, err
@@ -127,7 +128,7 @@ func (c *Client) GetEngineerWithName(Name string) (*Engineer_Api, error) {
 	if err != nil {
 		return nil, err
 	}
-	newEngineer := Engineer_Api{}
+	newEngineer := devops_resource.Engineer{}
 	err = json.Unmarshal(body, &newEngineer)
 	if err != nil {
 		return nil, err

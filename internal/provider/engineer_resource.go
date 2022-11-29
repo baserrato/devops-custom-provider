@@ -8,6 +8,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/baserrato/devops-resource"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces
@@ -80,7 +81,7 @@ func (r *EngineerResource) Create(ctx context.Context, req resource.CreateReques
 		return
 	}
 
-	var item Engineer_Api
+	var item devops_resource.Engineer
 	item.Name = string(plan.Name.ValueString())
 	item.Email = string(plan.Email.ValueString())
 	newEngineer, err := r.client.CreateEngineer(item)
@@ -138,7 +139,7 @@ func (r *EngineerResource) Update(ctx context.Context, req resource.UpdateReques
 		return
 	}
 
-	var item Engineer_Api
+	var item devops_resource.Engineer 
 	item.Name = string(plan.Name.ValueString())
 	item.Id = string(plan.Id.ValueString())
 	item.Email = string(plan.Email.ValueString())
