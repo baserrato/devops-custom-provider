@@ -78,10 +78,12 @@ func (d *EngineerDataSource) Read(ctx context.Context, req datasource.ReadReques
 
 	engineer, err := d.client.GetEngineerWithName(config.Name.ValueString())
 	if err != nil {
-		resp.Diagnostics.AddError(
-			"Error Reading Engineer",
-			"Could not read Engineer with that Name"+config.Name.ValueString()+": "+err.Error(),
-		)
+		diags = resp.State.Set(ctx, config)
+		resp.Diagnostics.Append(diags...)
+		if resp.Diagnostics.HasError() {
+			return
+		}
+		//resp.State.RemoveResource(ctx)
 		return
 	}
 	config.Name = types.StringValue(engineer.Name)

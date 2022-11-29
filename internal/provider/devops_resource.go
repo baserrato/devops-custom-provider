@@ -9,7 +9,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/liatrio/devops-bootcamp/examples/ch6/devops-resources"
+	devops_resource "github.com/liatrio/devops-bootcamp/examples/ch6/devops-resources"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces
@@ -280,7 +280,6 @@ func (r *DevOpsResource) Read(ctx context.Context, req resource.ReadRequest, res
 
 	diags = resp.State.Set(ctx, state)
 	resp.Diagnostics.Append(diags...)
-
 	if resp.Diagnostics.HasError() {
 		return
 	}

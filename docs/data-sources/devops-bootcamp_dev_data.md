@@ -17,26 +17,20 @@ Dev stuff
 
 ### Required
 
-- `name` (String) name for an Engineer
-
-### Optional
-
-- `engineers` (Attributes Set) (see [below for nested schema](#nestedatt--engineers))
+- `name` (String) name for a dev group
 
 ### Read-Only
 
-- `id` (String) identifier for an Engineer
+- `engineers` (Attributes List) (see [below for nested schema](#nestedatt--engineers))
+- `id` (String) identifier for a dev group
 
 <a id="nestedatt--engineers"></a>
 ### Nested Schema for `engineers`
 
-Required:
-
-- `id` (String)
-
 Read-Only:
 
 - `email` (String)
+- `id` (String)
 - `name` (String)
 
 

@@ -8,7 +8,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/liatrio/devops-bootcamp/examples/ch6/devops-resources"
+	devops_resource "github.com/liatrio/devops-bootcamp/examples/ch6/devops-resources"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces
@@ -139,7 +139,7 @@ func (r *EngineerResource) Update(ctx context.Context, req resource.UpdateReques
 		return
 	}
 
-	var item devops_resource.Engineer 
+	var item devops_resource.Engineer
 	item.Name = string(plan.Name.ValueString())
 	item.Id = string(plan.Id.ValueString())
 	item.Email = string(plan.Email.ValueString())
