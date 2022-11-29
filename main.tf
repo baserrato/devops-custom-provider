@@ -51,6 +51,13 @@ output "engineer_bob" {
   value = data.devops-bootcamp_engineer_data.bob
 }
 
+data "devops-bootcamp_dev_data" "bengal" {
+  name = "bengal"
+}
+output "dev_ferrets" {
+  value = data.devops-bootcamp_dev_data.bengal
+}
+
 
 
 

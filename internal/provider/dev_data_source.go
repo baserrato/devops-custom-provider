@@ -3,6 +3,7 @@ package provider
 import (
 	"context"
 
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
@@ -35,24 +36,24 @@ func (d *DevDataSource) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diagn
 		Attributes: map[string]tfsdk.Attribute{
 			"name": {
 				Required:            true,
-				MarkdownDescription: "name for an Engineer",
+				MarkdownDescription: "name for a dev group",
 				Type:                types.StringType,
 			},
 			"id": {
 				Computed:            true,
-				MarkdownDescription: "identifier for an Engineer",
+				MarkdownDescription: "identifier for a dev group",
 				Type:                types.StringType,
 			},
 			"engineers": {
-				Optional: true,
-				Attributes: tfsdk.SetNestedAttributes(map[string]tfsdk.Attribute{
+				Computed: true,
+				Attributes: tfsdk.ListNestedAttributes(map[string]tfsdk.Attribute{
 					"name": {
 						Type:     types.StringType,
 						Computed: true,
 					},
 					"id": {
 						Type:     types.StringType,
-						Required: true,
+						Computed: true,
 					},
 					"email": {
 						Type:     types.StringType,
@@ -76,46 +77,44 @@ func (d *DevDataSource) Configure(ctx context.Context, req datasource.ConfigureR
 }
 
 func (d *DevDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
-	/*var config devModel
+	var config devModel
 
-	// Read Terraform prior state data into the model
+	// Read Terraform prior config data into the model
 	diags := req.Config.Get(ctx, &config)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
-
-	dev, err := d.client.GetDev(config.Id.ValueString())
-
-		resp.Diagnostics.AddError(
-			"Unexpected Data Source Configure Type",
-			fmt.Sprintf("Returned value from GetEngineers: %s.", engineers),
-		)
-
+	dev, err := d.client.GetDevByName(config.Name.ValueString())
 	if err != nil {
-		resp.Diagnostics.AddError(
-			"Unable to Read Engineers",
-			err.Error(),
-		)
+		diags = resp.State.Set(ctx, config)
+		resp.Diagnostics.Append(diags...)
+		if resp.Diagnostics.HasError() {
+			return
+		}
 		return
 	}
-
-	// Map response body to model
+	intermediate := []engineersModel{}
 	config.Name = types.StringValue(dev.Name)
 	config.Id = types.StringValue(dev.Id)
+
 	for _, eng := range dev.Engineers {
-		config.Engineers = append(config.Engineers, engineersModel{
+		intermediate = append(intermediate, engineersModel{
 			Name:  types.StringValue(string(eng.Name)),
 			Id:    types.StringValue(string(eng.Id)),
 			Email: types.StringValue(string(eng.Email)),
 		})
 	}
 
-	// Set state
-	diags = resp.State.Set(ctx, &config)
+	_ = tfsdk.ValueFrom(ctx, intermediate, types.ListType{ElemType: types.ObjectType{AttrTypes: map[string]attr.Type{
+		"email": types.StringType,
+		"id":    types.StringType,
+		"name":  types.StringType,
+	}}}, &config.Engineers)
+
+	diags = resp.State.Set(ctx, config)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	*/
 }

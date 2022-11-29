@@ -9,7 +9,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/liatrio/devops-bootcamp/examples/ch6/devops-resources"
+	devops_resource "github.com/liatrio/devops-bootcamp/examples/ch6/devops-resources"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces
@@ -177,6 +177,12 @@ func (r *OpsResource) Read(ctx context.Context, req resource.ReadRequest, resp *
 		"id":    types.StringType,
 		"name":  types.StringType,
 	}}}, &state.Engineers)
+
+	diags = resp.State.Set(ctx, state)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 }
 
 func (r *OpsResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
