@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
-	"github.com/baserrato/devops-resource"
+	"github.com/liatrio/devops-bootcamp/examples/ch6/devops-resources"
 )
 
 func (c *Client) GetDevOps() ([]devops_resource.DevOps, error) {
