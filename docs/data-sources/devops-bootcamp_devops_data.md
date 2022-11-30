@@ -3,12 +3,12 @@
 page_title: "devops-bootcamp_devops_data Data Source - devops-custom-provider"
 subcategory: ""
 description: |-
-  
+  Dev stuff
 ---
 
 # devops-bootcamp_devops_data (Data Source)
 
-
+Dev stuff
 
 
 
@@ -17,33 +17,23 @@ description: |-
 
 ### Read-Only
 
-- `devops` (Attributes List) (see [below for nested schema](#nestedatt--devops))
+- `dev` (Attributes List) (see [below for nested schema](#nestedatt--dev))
+- `id` (String) The ID of this resource.
+- `ops` (Attributes List) (see [below for nested schema](#nestedatt--ops))
 
-<a id="nestedatt--devops"></a>
-### Nested Schema for `devops`
-
-Read-Only:
-
-- `devs` (Attributes List) (see [below for nested schema](#nestedatt--devops--devs))
-- `id` (String)
-- `ops` (Attributes List) (see [below for nested schema](#nestedatt--devops--ops))
-
-<a id="nestedatt--devops--devs"></a>
-### Nested Schema for `devops.devs`
-
-Required:
-
-- `dev_engineers` (Attributes List) (see [below for nested schema](#nestedatt--devops--devs--dev_engineers))
+<a id="nestedatt--dev"></a>
+### Nested Schema for `dev`
 
 Read-Only:
 
+- `engineers` (Attributes List) (see [below for nested schema](#nestedatt--dev--engineers))
 - `id` (String)
 - `name` (String)
 
-<a id="nestedatt--devops--devs--dev_engineers"></a>
-### Nested Schema for `devops.devs.dev_engineers`
+<a id="nestedatt--dev--engineers"></a>
+### Nested Schema for `dev.engineers`
 
-Required:
+Read-Only:
 
 - `email` (String)
 - `id` (String)
@@ -51,22 +41,19 @@ Required:
 
 
 
-<a id="nestedatt--devops--ops"></a>
-### Nested Schema for `devops.ops`
-
-Required:
-
-- `engineers` (Attributes List) (see [below for nested schema](#nestedatt--devops--ops--engineers))
+<a id="nestedatt--ops"></a>
+### Nested Schema for `ops`
 
 Read-Only:
 
+- `engineers` (Attributes List) (see [below for nested schema](#nestedatt--ops--engineers))
 - `id` (String)
 - `name` (String)
 
-<a id="nestedatt--devops--ops--engineers"></a>
-### Nested Schema for `devops.ops.engineers`
+<a id="nestedatt--ops--engineers"></a>
+### Nested Schema for `ops.engineers`
 
-Required:
+Read-Only:
 
 - `email` (String)
 - `id` (String)
