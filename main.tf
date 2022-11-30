@@ -54,8 +54,22 @@ output "engineer_bob" {
 data "devops-bootcamp_dev_data" "bengal" {
   name = "bengal"
 }
+data "devops-bootcamp_ops_data" "ferrets" {
+  name = "ferrets"
+}
+output "ops_ferrets" {
+  value = data.devops-bootcamp_ops_data.ferrets
+}
 output "dev_ferrets" {
   value = data.devops-bootcamp_dev_data.bengal
+}
+
+data "devops-bootcamp_devops_data" "devops" {
+  id = devops-bootcamp_devops.devops.id
+}
+
+output "devops" {
+  value = data.devops-bootcamp_devops_data.devops
 }
 
 
