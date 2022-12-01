@@ -69,8 +69,8 @@ jobs:
       - run: go mod download
       - env:
           TF_ACC: "1"
-        run:
-          - make setup
+        run: |
+          make setup
         timeout-minutes: 10
 
   # Run acceptance tests in a matrix with Terraform CLI versions
