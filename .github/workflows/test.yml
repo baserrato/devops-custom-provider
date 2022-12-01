@@ -45,7 +45,7 @@ jobs:
             (echo; echo "Unexpected difference in directories after code generation. Run 'go generate ./...' command and commit."; exit 1)
 
   # Run acceptance tests in a matrix with Terraform CLI versions
-  valiate-examples:
+  validate-examples:
     name:
       needs: build
       runs-on: ubuntu-latest
@@ -70,7 +70,7 @@ jobs:
             - env:
               TF_ACC: "1"
               run:
-                - make plan
+                - make setup
               timeout-minutes: 10
 
   # Run acceptance tests in a matrix with Terraform CLI versions
