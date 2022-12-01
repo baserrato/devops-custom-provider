@@ -19,11 +19,18 @@ Once you've written your provider, you'll want to [publish it on the Terraform R
 - [Terraform](https://www.terraform.io/downloads.html) >= 1.0
 - [Go](https://golang.org/doc/install) >= 1.18
 
+## Starting the DevOps Api
+
+1. Cloning down the [DevOps Bootcamp](https://github.com/liatrio/devops-bootcamp) repo
+1. Switch to branch devops-api `git switch devops-api`
+1. Traverse path `examples/ch6/devops-api/`
+1. Run the command `make docker-run` to spin up a docker container that host the devops-api at `localhost:8080`
+
 ## Building The Provider
 
 1. Clone the repository
 1. Enter the repository directory
-1. Build the provider using the Go `install` command:
+1. Build the provider using `make build`
 
 ```shell
 go install
