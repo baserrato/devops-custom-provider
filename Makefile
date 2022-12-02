@@ -1,7 +1,7 @@
 #makefile for custom terraform provider this is required for terraform plan
-.PHONY: testacc clean plan
+.PHONY: testacc clean init plan
 
-plan: clean fmt build init
+plan: clean build init
 	terraform -chdir=examples/allCombined plan 
 
 build: main.go generate
@@ -13,7 +13,7 @@ generate: main.go
 fmt: main.tf
 	terraform fmt
 
-init: clean main.tf build
+init: clean build
 	#makes a directory including making gome directories should they not exist (-p)
 	mkdir -p .plugin-cache/liatr.io/terraform/devops-bootcamp/0.0.1/$$(go env GOOS)_$$(go env GOARCH)
 	ln -s "${PWD}/terraform-provider-devops-bootcamp" "${PWD}/.plugin-cache/liatr.io/terraform/devops-bootcamp/0.0.1/$$(go env GOOS)_$$(go env GOARCH)/terraform-provider-devops-bootcamp"
