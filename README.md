@@ -1,6 +1,6 @@
-# Terraform Provider Scaffolding (Terraform Plugin Framework)
+# DevOps Terraform Provider
 
-_This template repository is built on the [Terraform Plugin Framework](https://github.com/hashicorp/terraform-plugin-framework). The template repository built on the [Terraform Plugin SDK](https://github.com/hashicorp/terraform-plugin-sdk) can be found at [terraform-provider-scaffolding](https://github.com/hashicorp/terraform-provider-scaffolding). See [Which SDK Should I Use?](https://www.terraform.io/docs/plugin/which-sdk.html) in the Terraform documentation for additional information._
+_This repository is built on the template [Terraform Provider Scaffolding](https://github.com/hashicorp/terraform-provider-scaffolding) that uses the [Terraform Plugin Framework](https://github.com/hashicorp/terraform-plugin-framework). The template repository is built on the [Terraform Plugin SDK](https://github.com/hashicorp/terraform-plugin-sdk). See [Which SDK Should I Use?](https://www.terraform.io/docs/plugin/which-sdk.html) in the Terraform documentation for additional information._
 
 This repository is a *template* for a [Terraform](https://www.terraform.io) provider. It is intended as a starting point for creating Terraform providers, containing:
 
@@ -19,15 +19,18 @@ Once you've written your provider, you'll want to [publish it on the Terraform R
 - [Terraform](https://www.terraform.io/downloads.html) >= 1.0
 - [Go](https://golang.org/doc/install) >= 1.18
 
+## Starting the DevOps Api
+
+1. Cloning down the [DevOps Bootcamp](https://github.com/liatrio/devops-bootcamp) repo
+1. Switch to branch devops-api `git switch devops-api`
+1. Traverse path `examples/ch6/devops-api/`
+1. Run the command `make docker-run` to spin up a docker container that host the DevOps Api at `localhost:8080`
+
 ## Building The Provider
 
-1. Clone the repository
-1. Enter the repository directory
-1. Build the provider using the Go `install` command:
-
-```shell
-go install
-```
+1. Clone the repo
+1. Use the command `make init` to initialize the custom provider for terraform
+1. You can then use the command: `make plan` to run a terraform plan on main.tf located in the root of the repo 
 
 ## Adding Dependencies
 
