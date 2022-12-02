@@ -1,7 +1,7 @@
 #makefile for custom terraform provider this is required for terraform plan
-.PHONY: testacc clean
+.PHONY: testacc clean plan
 
-plan: clean main.tf fmt build init
+plan: clean fmt build init
 	terraform -chdir=examples/allCombined plan 
 
 build: main.go generate
