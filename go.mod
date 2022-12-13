@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/hashicorp/terraform-plugin-docs v0.13.0
-	github.com/hashicorp/terraform-plugin-framework v0.17.0
+	github.com/hashicorp/terraform-plugin-framework v1.0.0
 	github.com/hashicorp/terraform-plugin-go v0.14.2
 	github.com/liatrio/devops-bootcamp/examples/ch6/devops-resources v0.0.0-20221129175703-a9bb7db3f32d
 )
