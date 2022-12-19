@@ -57,7 +57,7 @@ resource "devops-bootcamp_engineer" "bobby" {
 				  
 resource "devops-bootcamp_dev" "test" {
 	name      = "bengal2"
-	engineers = [{ id = devops-bootcamp_engineer.bob.id }, { id = devops-bootcamp_engineer.bobby.id }]
+	engineers = [{ id = devops-bootcamp_engineer.bob.id }]
 }
 `,
 				Check: resource.ComposeAggregateTestCheckFunc(
@@ -68,10 +68,6 @@ resource "devops-bootcamp_dev" "test" {
 					resource.TestCheckTypeSetElemNestedAttrs("devops-bootcamp_dev.test", "engineers.*", map[string]string{
 						"name":  "Bob2",
 						"email": "Bob@gmail.com",
-					}),
-					resource.TestCheckTypeSetElemNestedAttrs("devops-bootcamp_dev.test", "engineers.*", map[string]string{
-						"name":  "bobby2",
-						"email": "bobby2@gmail.com",
 					}),
 				),
 			},
