@@ -98,6 +98,8 @@ jobs:
           terraform_version: ${{ matrix.terraform }}
           terraform_wrapper: false
       - run: go mod download
+      - run: docker pull rhoofard/provider-api:latest
+      - run: docker run -d -p 8080:8080 rhoofard/provider-api
       - env:
           TF_ACC: "1"
         run: go test -v -cover ./internal/provider/
