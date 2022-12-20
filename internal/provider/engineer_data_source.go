@@ -22,11 +22,6 @@ type EngineerDataSource struct {
 	client *Client
 }
 
-// EngineerDataSourceModel describes the data source data model.
-type EngineersModel struct {
-	Engineers []engineersModel `tfsdk:"engineers"`
-}
-
 func (d *EngineerDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_engineer_data"
 }
