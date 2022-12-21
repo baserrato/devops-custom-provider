@@ -1,7 +1,7 @@
 #makefile for custom terraform provider this is required for terraform plan
 .PHONY: testacc clean init plan
 
-plan: clean init devops-resource
+plan: clean init devops-resource devops-datasource
 	terraform -chdir=examples/allCombined plan 
 
 build: main.go generate
@@ -32,6 +32,9 @@ ops-resource: dev-resource
 	terraform -chdir=examples/resources/Ops plan
 
 devops-resource: ops-resource clean
+	terraform -chdir=examples/resources/DevOps plan
+
+devops-datasource:
 	terraform -chdir=examples/resources/DevOps plan
 
 # Run acceptance tests
