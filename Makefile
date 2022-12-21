@@ -1,7 +1,11 @@
 #makefile for custom terraform provider this is required for terraform plan
+GOOS?=$$(go env GOOS)
+GOARCH?=$$(go env GOARCH)
+
 .PHONY: testacc clean init plan
 
-plan: clean init
+plan: clean init provider devops-resource devops-datasource
+	terraform -chdir=examples/allCombined init -plugin-dir=../../.plugin-cache
 	terraform -chdir=examples/allCombined plan 
 
 build: main.go generate
@@ -15,12 +19,48 @@ fmt: main.tf
 
 init: clean build
 	#makes a directory including making gome directories should they not exist (-p)
-	mkdir -p .plugin-cache/liatr.io/terraform/devops-bootcamp/0.0.1/$$(go env GOOS)_$$(go env GOARCH)
-	ln -s "${PWD}/terraform-provider-devops-bootcamp" "${PWD}/.plugin-cache/liatr.io/terraform/devops-bootcamp/0.0.1/$$(go env GOOS)_$$(go env GOARCH)/terraform-provider-devops-bootcamp"
-	terraform -chdir=examples/allCombined init -plugin-dir=../../.plugin-cache/
+	mkdir -p .plugin-cache/liatr.io/terraform/devops-bootcamp/0.0.1/$(GOOS)_$(GOARCH)
+	ln -s "${PWD}/terraform-provider-devops-bootcamp" "${PWD}/.plugin-cache/liatr.io/terraform/devops-bootcamp/0.0.1/$(GOOS)_$(GOARCH)/terraform-provider-devops-bootcamp"
 
 clean: 
 	rm -rf .plugin-cache .terraform .terraform.lock.hcl terraform-provider-devops-bootcamp
+	rm -rf examples/*/*/.terraform* examples/*/.terraform*
+
+provider:
+	terraform -chdir=examples/provider init -plugin-dir=../../.plugin-cache
+	terraform -chdir=examples/provider plan
+
+engineer-resource: 
+	terraform -chdir=examples/resources/Engineer init -plugin-dir=../../../.plugin-cache/
+	terraform -chdir=examples/resources/Engineer plan
+
+dev-resource: engineer-resource
+	terraform -chdir=examples/resources/Dev init -plugin-dir=../../../.plugin-cache/
+	terraform -chdir=examples/resources/Dev plan
+
+ops-resource: dev-resource
+	terraform -chdir=examples/resources/Ops init -plugin-dir=../../../.plugin-cache/
+	terraform -chdir=examples/resources/Ops plan
+
+devops-resource: ops-resource
+	terraform -chdir=examples/resources/DevOps init -plugin-dir=../../../.plugin-cache/
+	terraform -chdir=examples/resources/DevOps plan
+
+engineer-datasource:
+	terraform -chdir=examples/data-sources/Engineer init -plugin-dir=../../../.plugin-cache/
+	terraform -chdir=examples/data-sources/Engineer plan
+
+dev-datasource: engineer-datasource
+	terraform -chdir=examples/data-sources/Dev init -plugin-dir=../../../.plugin-cache/
+	terraform -chdir=examples/data-sources/Dev plan
+
+ops-datasource: dev-datasource
+	terraform -chdir=examples/data-sources/Ops init -plugin-dir=../../../.plugin-cache/
+	terraform -chdir=examples/data-sources/Ops plan
+
+devops-datasource: ops-datasource
+	terraform -chdir=examples/data-sources/DevOps init -plugin-dir=../../../.plugin-cache/
+	terraform -chdir=examples/data-sources/DevOps plan
 
 # Run acceptance tests
 testacc:
