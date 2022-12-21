@@ -23,7 +23,7 @@ clean:
 	rm -rf .plugin-cache .terraform .terraform.lock.hcl terraform-provider-devops-bootcamp
 
 engineer-resource: 
-	terraform -chdir=examples/resources/Engineer init -plugin-dir=../../.plugin-cache/
+	terraform -chdir=examples/resources/Engineer init -plugin-dir=../../../.plugin-cache/
 	terraform -chdir=examples/resources/Engineer plan
 
 dev-resource: engineer-resource 
