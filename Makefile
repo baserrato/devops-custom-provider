@@ -24,6 +24,7 @@ init: clean build
 
 clean: 
 	rm -rf .plugin-cache .terraform .terraform.lock.hcl terraform-provider-devops-bootcamp
+	rm -rf examples/*/*/.terraform* examples/*/.terraform*
 
 provider:
 	terraform -chdir=examples/provider init -plugin-dir=../../.plugin-cache
@@ -41,7 +42,7 @@ ops-resource: dev-resource
 	terraform -chdir=examples/resources/Ops init -plugin-dir=../../../.plugin-cache/
 	terraform -chdir=examples/resources/Ops plan
 
-devops-resource: ops-resource clean
+devops-resource: ops-resource
 	terraform -chdir=examples/resources/DevOps init -plugin-dir=../../../.plugin-cache/
 	terraform -chdir=examples/resources/DevOps plan
 
@@ -57,7 +58,7 @@ ops-datasource: dev-datasource
 	terraform -chdir=examples/data-sources/Ops init -plugin-dir=../../../.plugin-cache/
 	terraform -chdir=examples/data-sources/Ops plan
 
-devops-datasource: ops-datasource clean
+devops-datasource: ops-datasource
 	terraform -chdir=examples/data-sources/DevOps init -plugin-dir=../../../.plugin-cache/
 	terraform -chdir=examples/data-sources/DevOps plan
 
