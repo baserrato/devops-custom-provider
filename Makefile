@@ -31,7 +31,7 @@ dev-resource: engineer-resource
 ops-resource: dev-resource
 	terraform -chdir=examples/resources/Ops plan
 
-devops-resource: ops-resource clean
+devops-resource: ops-resource
 	terraform -chdir=examples/resources/DevOps plan
 
 engineer-datasource:
@@ -43,7 +43,7 @@ dev-datasource: engineer-datasource
 ops-datasource: dev-datasource
 	terraform -chdir=examples/data-sources/Ops plan
 
-devops-datasource: ops-datasource clean
+devops-datasource: ops-datasource
 	terraform -chdir=examples/data-sources/DevOps plan
 
 # Run acceptance tests
