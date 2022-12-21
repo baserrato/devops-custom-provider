@@ -1,7 +1,7 @@
 #makefile for custom terraform provider this is required for terraform plan
 .PHONY: testacc clean init plan
 
-plan: clean init devops-resource devops-datasource
+plan: clean init engineer-resource #devops-datasource
 	terraform -chdir=examples/allCombined plan 
 
 build: main.go generate
@@ -23,6 +23,7 @@ clean:
 	rm -rf .plugin-cache .terraform .terraform.lock.hcl terraform-provider-devops-bootcamp
 
 engineer-resource: 
+	terraform -chdir=examples/resources/Engineer init -plugin-dir=../../.plugin-cache/
 	terraform -chdir=examples/resources/Engineer plan
 
 dev-resource: engineer-resource 
