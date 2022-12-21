@@ -1,4 +1,7 @@
 #makefile for custom terraform provider this is required for terraform plan
+GOOS?=$(go env GOOS)
+GOARCH?=$(go env GOARCH)
+
 .PHONY: testacc clean init plan
 
 plan: clean init provider devops-resource devops-datasource
@@ -16,8 +19,8 @@ fmt: main.tf
 
 init: clean build
 	#makes a directory including making gome directories should they not exist (-p)
-	mkdir -p .plugin-cache/liatr.io/terraform/devops-bootcamp/0.0.1/$$(go env GOOS)_$$(go env GOARCH)
-	ln -s "${PWD}/terraform-provider-devops-bootcamp" "${PWD}/.plugin-cache/liatr.io/terraform/devops-bootcamp/0.0.1/$$(go env GOOS)_$$(go env GOARCH)/terraform-provider-devops-bootcamp"
+	mkdir -p .plugin-cache/liatr.io/terraform/devops-bootcamp/0.0.1/$(GOOS)_$(GOARCH)
+	ln -s "${PWD}/terraform-provider-devops-bootcamp" "${PWD}/.plugin-cache/liatr.io/terraform/devops-bootcamp/0.0.1/$(GOOS)_$(GOARCH)/terraform-provider-devops-bootcamp"
 
 clean: 
 	rm -rf .plugin-cache .terraform .terraform.lock.hcl terraform-provider-devops-bootcamp
