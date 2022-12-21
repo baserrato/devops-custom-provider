@@ -1,7 +1,7 @@
 #makefile for custom terraform provider this is required for terraform plan
 .PHONY: testacc clean init plan
 
-plan: clean init engineer-resource #devops-datasource
+plan: clean init devops-resource devops-datasource
 	terraform -chdir=examples/allCombined init -plugin-dir=../../.plugin-cache
 	terraform -chdir=examples/allCombined plan 
 
@@ -26,25 +26,32 @@ engineer-resource:
 	terraform -chdir=examples/resources/Engineer init -plugin-dir=../../../.plugin-cache/
 	terraform -chdir=examples/resources/Engineer plan
 
-dev-resource: engineer-resource 
+dev-resource: engineer-resource
+	terraform -chdir=examples/resources/Dev init -plugin-dir=../../../.plugin-cache/
 	terraform -chdir=examples/resources/Dev plan
 
 ops-resource: dev-resource
+	terraform -chdir=examples/resources/Ops init -plugin-dir=../../../.plugin-cache/
 	terraform -chdir=examples/resources/Ops plan
 
-devops-resource: ops-resource
+devops-resource: ops-resource clean
+	terraform -chdir=examples/resources/DevOps init -plugin-dir=../../../.plugin-cache/
 	terraform -chdir=examples/resources/DevOps plan
 
 engineer-datasource:
+	terraform -chdir=examples/data-sources/Engineer init -plugin-dir=../../../.plugin-cache/
 	terraform -chdir=examples/data-sources/Engineer plan
 
 dev-datasource: engineer-datasource
+	terraform -chdir=examples/data-sources/Dev init -plugin-dir=../../../.plugin-cache/
 	terraform -chdir=examples/data-sources/Dev plan
 
 ops-datasource: dev-datasource
+	terraform -chdir=examples/data-sources/Ops init -plugin-dir=../../../.plugin-cache/
 	terraform -chdir=examples/data-sources/Ops plan
 
-devops-datasource: ops-datasource
+devops-datasource: ops-datasource clean
+	terraform -chdir=examples/data-sources/DevOps init -plugin-dir=../../../.plugin-cache/
 	terraform -chdir=examples/data-sources/DevOps plan
 
 # Run acceptance tests
