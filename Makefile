@@ -1,6 +1,6 @@
 #makefile for custom terraform provider this is required for terraform plan
-GOOS?=$(go env GOOS)
-GOARCH?=$(go env GOARCH)
+GOOS?=$$(go env GOOS)
+GOARCH?=$$(go env GOARCH)
 
 .PHONY: testacc clean init plan
 
