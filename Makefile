@@ -9,13 +9,8 @@ plan: clean init provider resource datasource allCombined
 build: main.go generate
 	go $@ -o terraform-provider-devops-bootcamp
 
-allCombined: clean
-	@printf "<         >\r" && \
-	if [[ $(terraform -chdir=examples/allCombined init -plugin-dir=../../.plugin-cache > /dev/null) -eq 0 ]]; then \
-	echo "Process failed" && return; fi && \
-	printf "<#####    >\r" && \
-	if [[ $(terraform -chdir=examples/allCombined plan > /dev/null) -eq 0 ]]; then echo "Process failed" && return; fi && \
-	printf "<#########>\r\n"
+allCombined: clean build init
+	./.make-helper.sh ac
 
 resource: engineer-resource dev-resource ops-resource devops-resource
 
@@ -29,7 +24,7 @@ fmt: main.tf
 
 init: clean build
 	#makes a directory including making gome directories should they not exist (-p)
-	@mkdir -p .plugin-cache/liatr.io/terraform/devops-bootcamp/0.0.1/$(GOOS)_$(GOARCH)
+	mkdir -p .plugin-cache/liatr.io/terraform/devops-bootcamp/0.0.1/$(GOOS)_$(GOARCH)
 	ln -s "${PWD}/terraform-provider-devops-bootcamp" "${PWD}/.plugin-cache/liatr.io/terraform/devops-bootcamp/0.0.1/$(GOOS)_$(GOARCH)/terraform-provider-devops-bootcamp"
 
 clean: 
