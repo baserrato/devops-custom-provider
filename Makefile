@@ -30,7 +30,7 @@ fmt: main.tf
 	terraform $@
 
 init-debug: clean build
-	@mkdir -p .plugin-cache/liatr.io/terraform/devops-bootcamp/0.0.1/${GOOS}_${GOARCH} && \
+	mkdir -p .plugin-cache/liatr.io/terraform/devops-bootcamp/0.0.1/${GOOS}_${GOARCH}
 	ln -s "${PWD}/terraform-provider-devops-bootcamp" "${PWD}/.plugin-cache/liatr.io/terraform/devops-bootcamp/0.0.1/${GOOS}_${GOARCH}/terraform-provider-devops-bootcamp"
 
 
