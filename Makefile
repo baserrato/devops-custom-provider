@@ -30,18 +30,17 @@ fmt: main.tf
 	terraform $@
 
 #makes a directory including making gome directories should they not exist (-p)
-init: build
-	@mkdir -p .plugin-cache/liatr.io/terraform/devops-bootcamp/0.0.1/${GOOS}_${GOARCH} && \
-	ln -s "${PWD}/terraform-provider-devops-bootcamp" "${PWD}/.plugin-cache/liatr.io/terraform/devops-bootcamp/0.0.1/${GOOS}_${GOARCH}/terraform-provider-devops-bootcamp"
+init: clean build
+	@mkdir -p .plugin-cache/liatr.io/terraform/devops-bootcamp/0.0.1/$(GOOS)_$(GOARCH) && \
+	ln -s "${PWD}/terraform-provider-devops-bootcamp" "${PWD}/.plugin-cache/liatr.io/terraform/devops-bootcamp/0.0.1/$(GOOS)_$(GOARCH)/terraform-provider-devops-bootcamp"
 
 clean: 
 	@rm -rf .plugin-cache .terraform .terraform.lock.hcl terraform-provider-devops-bootcamp && \
 	rm -rf examples/*/*/.terraform* examples/*/.terraform*
 
 provider:
-	ls ${PWD}/.plugin-cache/liatr.io/terraform/devops-bootcamp/0.0.1/
-	#terraform -chdir=examples/provider init -plugin-dir=../../.plugin-cache
-	#terraform -chdir=examples/provider plan
+	terraform -chdir=examples/provider init -plugin-dir=../../.plugin-cache
+	terraform -chdir=examples/provider plan
 
 engineer-resource: init
 	terraform -chdir=examples/resources/Engineer init -plugin-dir=../../../.plugin-cache/
