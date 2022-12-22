@@ -1,10 +1,10 @@
 #makefile for custom terraform provider this is required for terraform plan
-.PHONY: testacc clean init plan build generate fmt allCombined provider resource datasource engineer-resource dev-resource ops-resource devops-resource engineer-datasource dev-datasource ops-datasource devops-datasource startbar
+.PHONY: testacc clean init plan build generate fmt allCombined provider resource datasource engineer-resource dev-resource ops-resource devops-resource engineer-datasource dev-datasource ops-datasource devops-datasource startbar debug-allCombined
 
 GOOS?=$$(go env GOOS)
 GOARCH?=$$(go env GOARCH)
 
-plan: init-debug provider #resource datasource debug-allCombined
+plan: init resource datasource debug-allCombined
 
 build: main.go generate
 	@go $@ -o terraform-provider-devops-bootcamp &> /dev/null
@@ -28,11 +28,6 @@ generate: main.go
 
 fmt: main.tf
 	terraform $@
-
-init-debug: clean build
-	mkdir -p .plugin-cache/liatr.io/terraform/devops-bootcamp/0.0.1/${GOOS}_${GOARCH}
-	ln -s "${PWD}/terraform-provider-devops-bootcamp" "${PWD}/.plugin-cache/liatr.io/terraform/devops-bootcamp/0.0.1/${GOOS}_${GOARCH}/terraform-provider-devops-bootcamp"
-
 
 #makes a directory including making gome directories should they not exist (-p)
 init: clean build
