@@ -38,39 +38,39 @@ clean:
 	@rm -rf .plugin-cache .terraform .terraform.lock.hcl terraform-provider-devops-bootcamp && \
 	rm -rf examples/*/*/.terraform* examples/*/.terraform*
 
-provider:
+provider: init
 	terraform -chdir=examples/provider init -plugin-dir=../../.plugin-cache
 	terraform -chdir=examples/provider plan
 
-engineer-resource: 
+engineer-resource: init
 	terraform -chdir=examples/resources/Engineer init -plugin-dir=../../../.plugin-cache/
 	terraform -chdir=examples/resources/Engineer plan
 
-dev-resource:
+dev-resource: init
 	terraform -chdir=examples/resources/Dev init -plugin-dir=../../../.plugin-cache/
 	terraform -chdir=examples/resources/Dev plan
 
-ops-resource:
+ops-resource: init
 	terraform -chdir=examples/resources/Ops init -plugin-dir=../../../.plugin-cache/
 	terraform -chdir=examples/resources/Ops plan
 
-devops-resource:
+devops-resource: init
 	terraform -chdir=examples/resources/DevOps init -plugin-dir=../../../.plugin-cache/
 	terraform -chdir=examples/resources/DevOps plan
 
-engineer-datasource:
+engineer-datasource: init
 	terraform -chdir=examples/data-sources/Engineer init -plugin-dir=../../../.plugin-cache/
 	terraform -chdir=examples/data-sources/Engineer plan
 
-dev-datasource:
+dev-datasource: init
 	terraform -chdir=examples/data-sources/Dev init -plugin-dir=../../../.plugin-cache/
 	terraform -chdir=examples/data-sources/Dev plan
 
-ops-datasource:
+ops-datasource: init
 	terraform -chdir=examples/data-sources/Ops init -plugin-dir=../../../.plugin-cache/
 	terraform -chdir=examples/data-sources/Ops plan
 
-devops-datasource:
+devops-datasource: init
 	terraform -chdir=examples/data-sources/DevOps init -plugin-dir=../../../.plugin-cache/
 	terraform -chdir=examples/data-sources/DevOps plan
 
