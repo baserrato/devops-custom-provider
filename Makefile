@@ -1,21 +1,25 @@
 #makefile for custom terraform provider this is required for terraform plan
+.PHONY: testacc clean init plan build generate fmt provider resource datasource engineer-resource dev-resource ops-resource devops-resource engineer-datasource dev-datasource ops-datasource devops-datasource
+
 GOOS?=$$(go env GOOS)
 GOARCH?=$$(go env GOARCH)
 
-.PHONY: testacc clean init plan
-
-plan: clean init provider devops-resource devops-datasource
+plan: clean init provider resource datasource
 	terraform -chdir=examples/allCombined init -plugin-dir=../../.plugin-cache
-	terraform -chdir=examples/allCombined plan 
+	terraform -chdir=examples/allCombined $@ 
 
 build: main.go generate
-	go build -o terraform-provider-devops-bootcamp
+	go $@ -o terraform-provider-devops-bootcamp
+
+resource: engineer-resource dev-resource ops-resource devops-resource
+
+datasource: engineer-datasource dev-datasource ops-datasource devops-datasource
 
 generate: main.go
-	go generate
+	go $@
 
 fmt: main.tf
-	terraform fmt
+	terraform $@
 
 init: clean build
 	#makes a directory including making gome directories should they not exist (-p)
@@ -34,15 +38,15 @@ engineer-resource:
 	terraform -chdir=examples/resources/Engineer init -plugin-dir=../../../.plugin-cache/
 	terraform -chdir=examples/resources/Engineer plan
 
-dev-resource: engineer-resource
+dev-resource:
 	terraform -chdir=examples/resources/Dev init -plugin-dir=../../../.plugin-cache/
 	terraform -chdir=examples/resources/Dev plan
 
-ops-resource: dev-resource
+ops-resource:
 	terraform -chdir=examples/resources/Ops init -plugin-dir=../../../.plugin-cache/
 	terraform -chdir=examples/resources/Ops plan
 
-devops-resource: ops-resource
+devops-resource:
 	terraform -chdir=examples/resources/DevOps init -plugin-dir=../../../.plugin-cache/
 	terraform -chdir=examples/resources/DevOps plan
 
@@ -50,15 +54,15 @@ engineer-datasource:
 	terraform -chdir=examples/data-sources/Engineer init -plugin-dir=../../../.plugin-cache/
 	terraform -chdir=examples/data-sources/Engineer plan
 
-dev-datasource: engineer-datasource
+dev-datasource:
 	terraform -chdir=examples/data-sources/Dev init -plugin-dir=../../../.plugin-cache/
 	terraform -chdir=examples/data-sources/Dev plan
 
-ops-datasource: dev-datasource
+ops-datasource:
 	terraform -chdir=examples/data-sources/Ops init -plugin-dir=../../../.plugin-cache/
 	terraform -chdir=examples/data-sources/Ops plan
 
-devops-datasource: ops-datasource
+devops-datasource:
 	terraform -chdir=examples/data-sources/DevOps init -plugin-dir=../../../.plugin-cache/
 	terraform -chdir=examples/data-sources/DevOps plan
 
