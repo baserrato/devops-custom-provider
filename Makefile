@@ -39,9 +39,9 @@ clean:
 	rm -rf examples/*/*/.terraform* examples/*/.terraform*
 
 provider:
-	ls ${PWD}/.plugin-cache/liatr.io/terraform/devops-bootcamp/0.0.1/$(GOOS)_$(GOARCH)/ 
-	#terraform -chdir=examples/provider init -plugin-dir=../../.plugin-cache
-	#terraform -chdir=examples/provider plan
+	ls ${PWD}/.plugin-cache/liatr.io/terraform/devops-bootcamp/0.0.1/linux_amd64/ 
+	terraform -chdir=examples/provider init -plugin-dir=../../.plugin-cache
+	terraform -chdir=examples/provider plan
 
 engineer-resource: init
 	terraform -chdir=examples/resources/Engineer init -plugin-dir=../../../.plugin-cache/
