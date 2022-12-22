@@ -1,15 +1,21 @@
 #makefile for custom terraform provider this is required for terraform plan
-.PHONY: testacc clean init plan build generate fmt provider resource datasource engineer-resource dev-resource ops-resource devops-resource engineer-datasource dev-datasource ops-datasource devops-datasource
+.PHONY: testacc clean init plan build generate fmt allCombined provider resource datasource engineer-resource dev-resource ops-resource devops-resource engineer-datasource dev-datasource ops-datasource devops-datasource
 
 GOOS?=$$(go env GOOS)
 GOARCH?=$$(go env GOARCH)
 
-plan: clean init provider resource datasource
-	terraform -chdir=examples/allCombined init -plugin-dir=../../.plugin-cache
-	terraform -chdir=examples/allCombined $@ 
+plan: clean init provider resource datasource allCombined
 
 build: main.go generate
 	go $@ -o terraform-provider-devops-bootcamp
+
+allCombined:
+	@printf "<         >\r" &&\
+	if [[ $(terraform -chdir=examples/allCombined init -plugin-dir=../../.plugin-cache > /dev/null) ]]; then echo "Process failed"; fi &&\
+	printf "<#####    >\r" &&\
+	terraform -chdir=examples/allCombined plan > /dev/null &&\
+	if [ $? ]; then echo "Process failed"; fi &&\
+	printf "<#########>\r\n"
 
 resource: engineer-resource dev-resource ops-resource devops-resource
 
