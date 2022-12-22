@@ -1,14 +1,26 @@
 #!/bin/bash
 
 function ac () {
-  printf "<         >\r" && \
-  err1=$(terraform -chdir=examples/allCombined init -plugin-dir=../../.plugin-cache | grep "Error") && \
-  if [[ $err1 != "" ]]; then printf "${err1}\n"; \
-    else printf "<#####    >\r" && err2=$(terraform -chdir=examples/allCombined plan | grep -c "Error") && \
-    if [[ $err2 -ne 0 ]]; then printf "${err2}\n"; \
-      else printf "<#########>\r\n"; \
-    fi; \
+  local err1=$(terraform -chdir=examples/allCombined init -plugin-dir=../../.plugin-cache | grep "Error")
+  if [ "$err1" != "" ]; then
+    printf "$err1\r\n"
+    return 1
+  else
+    printf "|#######################      |\r"
   fi
+
+
+  local err2=$(terraform -chdir=examples/allCombined plan | grep "Error")
+  if [ "$err2" != "" ]; then
+    printf "$err2\r\n"
+    return 2
+  else
+    printf "|#############################| "
+    echo "Finished Successfully"
+  fi;
 }
 
-if [[ $1 = "ac" ]]; then ac; fi
+printf "|##########                   |\r"
+if [ "$1" = "ac" ]; then
+  ac;
+fi
