@@ -7,7 +7,7 @@ GOARCH?=$$(go env GOARCH)
 plan: clean init provider resource datasource debug-allCombined
 
 build: main.go generate
-	go $@ -o terraform-provider-devops-bootcamp
+	@go $@ -o terraform-provider-devops-bootcamp
 
 debug-allCombined:
 	terraform -chdir=examples/allCombined init -plugin-dir=../../.plugin-cache
